@@ -1,0 +1,12 @@
+{
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "files.trimTrailingWhitespace": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.packageManager": "yarn",
+    "eslint.validate": [
+        "javascript",
+        { "language": "typescript", "autoFix": true }
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}
