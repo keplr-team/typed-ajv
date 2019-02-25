@@ -1,20 +1,6 @@
 import * as _ from 'lodash';
 
 /**
- * USAGE
- *
- * Define the common schema like this:
- * const cs = CS.Object({
- *   a: CS.String()
- *   b: CS.Number()
- * })
- *
- * Get the json schema :
- * const schema = cs.getJsonSchema()
- *
- * Get the typescript type:
- * type t = typeof cs.type // t = { a: string, b: number }
- *
  * HOW IT WORKS
  *
  * A CS function returns an object with the following properties:
