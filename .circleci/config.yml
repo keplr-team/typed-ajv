@@ -28,6 +28,14 @@ jobs:
           at: .
       - run: yarn test
 
+  build:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: .
+      - run: yarn build
 
 workflows:
   version: 2
@@ -35,5 +43,8 @@ workflows:
     jobs:
       - install-deps
       - test:
+          requires:
+            - install-deps
+      - build:
           requires:
             - install-deps

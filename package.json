@@ -1,12 +1,12 @@
 {
-    "name": "common-schema",
+    "name": "@keplr-team/common-schema",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
     "repository": "git@github.com:keplr-team/common-schema.git",
-    "author": "Nicolas Even <nicolas.even@gokepler.fr>",
     "license": "UNLICENSED",
-    "private": true,
     "scripts": {
+        "build": "tsc",
         "test": "jest"
     },
     "husky": {
