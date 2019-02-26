@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+## Script variables
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+## Args
+TARGET_WEBHOOK="$1"
+MESSAGE="$2"
+
+##
+## Help
+if [[ $# -ne 2 || $1 == '--help' || -z "${TARGET_WEBHOOK}" ]]; then
+    echo "Notify slack"
+    echo "Usage:    ./notify_slack TARGET_WEBHOOK JSON_MESSAGE"
+    echo "Notify slack options:"
+    echo "          --help"
+    echo "TARGET_WEBHOOK must be like: https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXX"
+    echo "MESSAGE must be a string with doubles quotes like: \"Hello World !\""
+    exit 0
+fi
+
+## Send message
+curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"${MESSAGE}\"}" ${TARGET_WEBHOOK}
