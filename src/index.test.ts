@@ -23,6 +23,16 @@ test('number schema works', () => {
     });
 });
 
+test('integer schema works', () => {
+    const cs = CS.Integer(true);
+    type type_ = typeof cs.type;
+
+    checkType<type_>(2);
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'integer',
+    });
+});
+
 test('any schema works', () => {
     const cs = CS.Any(true);
     type type_ = typeof cs.type;
