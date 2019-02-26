@@ -1,6 +1,6 @@
 {
-    "name": "@keplr-team/common-schema",
-    "version": "1.0.0",
+    "name": "@keplr/common-schema",
+    "version": "0.2.0",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
     "repository": "git@github.com:keplr-team/common-schema.git",
