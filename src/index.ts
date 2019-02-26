@@ -49,6 +49,13 @@ function _Number() {
     };
 }
 
+function _Integer() {
+    return {
+        getJsonSchema: () => ({ type: 'integer' as 'integer' }),
+        type: 2 as number,
+    };
+}
+
 function _Any() {
     return {
         getJsonSchema: () => ({}),
@@ -181,6 +188,7 @@ export const CS = {
     // Basic types
     String: addRequiredArg0(_String),
     Number: addRequiredArg0(_Number),
+    Integer: addRequiredArg0(_Integer),
     Any: addRequiredArg0(_Any),
 
     // Compound types
