@@ -60,7 +60,7 @@ commands:
     steps:
       - run:
           name: Publish a package to npm
-          command: .circleci/scripts/push_to_npm "<< parameters.package-json-path >>" "<< parameters.npm-organization-scope >>" "<< parameters.target-tag >>"
+          command: .circleci/scripts/push_to_npm << parameters.package-json-path >> "<< parameters.npm-organization-scope >>" "<< parameters.target-tag >>"
 
 jobs:
   install-deps:
