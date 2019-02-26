@@ -48,7 +48,7 @@ commands:
       package-json-path:
         description: path to the package.json you want to publish
         type: string
-        default: ${CIRCLE_WORKING_DIRECTORY}/package.json
+        default: ~/repo/package.json
       npm-organization-scope:
         description: npm organization name
         type: string
