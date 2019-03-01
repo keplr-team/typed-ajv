@@ -2,7 +2,7 @@ import { CS } from '.';
 
 const checkType = <A>(a: A) => a;
 
-test('string schema works', () => {
+it('works with string schema', () => {
     const str = CS.String(true);
     type strType = typeof str.type;
 
@@ -13,7 +13,7 @@ test('string schema works', () => {
     });
 });
 
-test('number schema works', () => {
+it('works with number schema', () => {
     const cs = CS.Number(true);
     type type_ = typeof cs.type;
 
@@ -23,7 +23,7 @@ test('number schema works', () => {
     });
 });
 
-test('integer schema works', () => {
+it('works with integer schema', () => {
     const cs = CS.Integer(true);
     type type_ = typeof cs.type;
 
@@ -33,7 +33,7 @@ test('integer schema works', () => {
     });
 });
 
-test('any schema works', () => {
+it('works with any schema', () => {
     const cs = CS.Any(true);
     type type_ = typeof cs.type;
 
@@ -43,7 +43,7 @@ test('any schema works', () => {
     expect(cs.getJsonSchema()).toEqual({});
 });
 
-test('obj schema works', () => {
+it('works with object schema', () => {
     const obj = CS.Object(
         {
             a: CS.String(true),
@@ -70,7 +70,7 @@ test('obj schema works', () => {
     });
 });
 
-test('object with optional works', () => {
+it('works with object schema and optional', () => {
     const obj = CS.Object(
         {
             a: CS.String(true),
@@ -106,7 +106,7 @@ test('object with optional works', () => {
     });
 });
 
-test('object with all optional works', () => {
+it('works with object schema with all optional', () => {
     const obj = CS.Object(
         {
             a: CS.String(false),
@@ -141,7 +141,7 @@ test('object with all optional works', () => {
     });
 });
 
-test('mergeobjects works', () => {
+it('works with mergeobjects schema', () => {
     const obj = CS.MergeObjects(
         CS.Object(
             {
@@ -185,7 +185,7 @@ test('mergeobjects works', () => {
     });
 });
 
-test('mergeobjects with no required fields works', () => {
+it('works with mergeobjects schema and no required fields', () => {
     const obj = CS.MergeObjects(
         CS.Object(
             {
@@ -229,7 +229,7 @@ test('mergeobjects with no required fields works', () => {
     });
 });
 
-test('array schema works', () => {
+it('works with array schema', () => {
     const arr = CS.Array(CS.String(true), true);
     type arrType = typeof arr.type;
 
@@ -243,7 +243,7 @@ test('array schema works', () => {
     });
 });
 
-test('enum schema works', () => {
+it('works with enum schema', () => {
     const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true);
     type csType = typeof cs.type;
 
