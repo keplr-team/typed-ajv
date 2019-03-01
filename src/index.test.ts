@@ -33,6 +33,16 @@ it('works with integer schema', () => {
     });
 });
 
+it('works with boolean schema', () => {
+    const cs = CS.Boolean(true);
+    type type_ = typeof cs.type;
+
+    checkType<type_>(true);
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'boolean',
+    });
+});
+
 it('works with any schema', () => {
     const cs = CS.Any(true);
     type type_ = typeof cs.type;

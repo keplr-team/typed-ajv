@@ -56,6 +56,13 @@ function _Integer() {
     };
 }
 
+function _Boolean() {
+    return {
+        getJsonSchema: () => ({ type: 'boolean' as 'boolean' }),
+        type: true as boolean,
+    };
+}
+
 function _Any() {
     return {
         getJsonSchema: () => ({}),
@@ -189,6 +196,7 @@ export const CS = {
     String: addRequiredArg0(_String),
     Number: addRequiredArg0(_Number),
     Integer: addRequiredArg0(_Integer),
+    Boolean: addRequiredArg0(_Boolean),
     Any: addRequiredArg0(_Any),
 
     // Compound types
