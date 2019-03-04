@@ -13,6 +13,19 @@ it('works with string schema', () => {
     });
 });
 
+it('works with string schema and options', () => {
+    const str = CS.String(true, { minLength: 1, maxLength: 10 });
+    type strType = typeof str.type;
+
+    checkType<strType>('abcd');
+    expect(str.getJsonSchema()).toEqual({
+        type: 'string',
+        transform: ['trim'],
+        minLength: 1,
+        maxLength: 10,
+    });
+});
+
 it('works with number schema', () => {
     const cs = CS.Number(true);
     type type_ = typeof cs.type;
@@ -23,6 +36,18 @@ it('works with number schema', () => {
     });
 });
 
+it('works with number schema and options', () => {
+    const cs = CS.Number(true, { exclusiveMinimum: 3, exclusiveMaximum: 5 });
+    type type_ = typeof cs.type;
+
+    checkType<type_>(2);
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'number',
+        exclusiveMinimum: 3,
+        exclusiveMaximum: 5,
+    });
+});
+
 it('works with integer schema', () => {
     const cs = CS.Integer(true);
     type type_ = typeof cs.type;
@@ -30,6 +55,18 @@ it('works with integer schema', () => {
     checkType<type_>(2);
     expect(cs.getJsonSchema()).toEqual({
         type: 'integer',
+    });
+});
+
+it('works with integer schema and options', () => {
+    const cs = CS.Integer(true, { minimum: 1, maximum: 4 });
+    type type_ = typeof cs.type;
+
+    checkType<type_>(2);
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'integer',
+        minimum: 1,
+        maximum: 4,
     });
 });
 
@@ -250,6 +287,25 @@ it('works with array schema', () => {
             type: 'string',
             transform: ['trim'],
         },
+    });
+});
+
+it('works with array schema and opts', () => {
+    const arr = CS.Array(CS.String(true), true, {
+        uniqueItems: true,
+        minItems: 1,
+    });
+    type arrType = typeof arr.type;
+
+    checkType<arrType>(['abcd', 'abcd']);
+    expect(arr.getJsonSchema()).toEqual({
+        type: 'array',
+        items: {
+            type: 'string',
+            transform: ['trim'],
+        },
+        uniqueItems: true,
+        minItems: 1,
     });
 });
 

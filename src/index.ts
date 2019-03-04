@@ -1,4 +1,10 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
+import {
+    StringOptions,
+    NumericOptions,
+    ArrayOptions,
+    Options,
+} from './json-schema-declarations';
 
 /**
  * HOW IT WORKS
@@ -32,26 +38,27 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
-function _String() {
+function _String(opts?: StringOptions) {
     return {
         getJsonSchema: () => ({
             type: 'string' as 'string',
             transform: ['trim'],
+            ...opts,
         }),
         type: 'abcd' as string,
     };
 }
 
-function _Number() {
+function _Number(opts?: NumericOptions) {
     return {
-        getJsonSchema: () => ({ type: 'number' as 'number' }),
+        getJsonSchema: () => ({ type: 'number' as 'number', ...opts }),
         type: 1234 as number,
     };
 }
 
-function _Integer() {
+function _Integer(opts?: NumericOptions) {
     return {
-        getJsonSchema: () => ({ type: 'integer' as 'integer' }),
+        getJsonSchema: () => ({ type: 'integer' as 'integer', ...opts }),
         type: 2 as number,
     };
 }
@@ -108,23 +115,17 @@ function _Object<P extends Props, R extends boolean>(props: P, required: R) {
     };
 }
 
-/* function _Optional<P extends CommonSchema<any>>(prop: P) {
-  return {
-    ..._.omit(prop, ['type', 'isRequired']),
-    type: (undefined as unknown) as P['type'] | undefined,
-    isRequired: false as false,
-  };
-} */
-
 function _Array<P extends CommonSchema<any>, R extends boolean>(
     type: P,
     required: R,
+    opts?: ArrayOptions,
 ) {
     return {
         getJsonSchema: () => {
             return {
                 type: 'array',
                 items: type.getJsonSchema(),
+                ...opts,
             };
         },
         type: (undefined as unknown) as P['type'][],
@@ -179,12 +180,13 @@ function _Enum<T extends string[], R extends boolean>(els: T, required: R) {
  * We have a version of this function for each number of arguments of the original function
  * because we can't use the spread operator if we want "required" as the last argument.
  */
-function addRequiredArg0<Ret extends CommonSchemaWithoutIsRequired<any>>(
-    csFunc: () => Ret,
-) {
-    function withRequired<T extends boolean>(required: T) {
+function addRequiredArg<
+    Ret extends CommonSchemaWithoutIsRequired<any>,
+    CSOptions extends Options
+>(csFunc: (opts?: CSOptions) => Ret) {
+    function withRequired<T extends boolean>(required: T, opts?: CSOptions) {
         return {
-            ...csFunc(),
+            ...csFunc(opts),
             isRequired: (required as unknown) as T extends true ? true : false,
         };
     }
@@ -193,11 +195,11 @@ function addRequiredArg0<Ret extends CommonSchemaWithoutIsRequired<any>>(
 
 export const CS = {
     // Basic types
-    String: addRequiredArg0(_String),
-    Number: addRequiredArg0(_Number),
-    Integer: addRequiredArg0(_Integer),
-    Boolean: addRequiredArg0(_Boolean),
-    Any: addRequiredArg0(_Any),
+    String: addRequiredArg(_String),
+    Number: addRequiredArg(_Number),
+    Integer: addRequiredArg(_Integer),
+    Boolean: addRequiredArg(_Boolean),
+    Any: addRequiredArg(_Any),
 
     // Compound types
     Object: _Object,
