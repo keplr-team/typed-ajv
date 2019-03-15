@@ -11,6 +11,22 @@ export interface StringOptions extends Options {
     maxLength?: number;
     /** String value must match the given pattern, must be a string not a RegEx object */
     pattern?: string;
+    /** String value must be of given format */
+    format?:
+        | 'date'
+        | 'time'
+        | 'date-time'
+        | 'uri'
+        | 'uri-reference'
+        | 'uri-template'
+        | 'email'
+        | 'hostname'
+        | 'ipv4'
+        | 'ipv6'
+        | 'regex'
+        | 'uuid'
+        | 'json-pointer'
+        | 'relative-json-pointer';
 }
 
 /** JSON Schema options for numeric values */
