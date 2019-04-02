@@ -1,4 +1,4 @@
-# common-schema
+# typed-ajv
 
 Define TypeScript types and JSON Schema schemas from the same declaration.
 
