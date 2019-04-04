@@ -78,6 +78,14 @@ function _Any() {
     };
 }
 
+function _Unknown() {
+    return {
+        getJsonSchema: () => ({}),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        type: 'abcd' as unknown,
+    };
+}
+
 /** The two following types return a subtype that represent the required/optional keys of
  * type T
  */
@@ -199,7 +207,10 @@ export const CS = {
     Number: addRequiredArg(_Number),
     Integer: addRequiredArg(_Integer),
     Boolean: addRequiredArg(_Boolean),
+    /** Accept any value and type it as any */
     Any: addRequiredArg(_Any),
+    /** Accept any value and type it as unknown */
+    Unknown: addRequiredArg(_Unknown),
 
     // Compound types
     Object: _Object,
