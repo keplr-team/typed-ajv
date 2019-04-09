@@ -1,182 +1,48 @@
 version: 2.1
 
 executors:
-  nodejs:
+  ci-node:
     docker:
-      - image: node:dubnium
-    working_directory: ~/repo
-  nodejs-docker:
-    docker:
-      - image: circleci/node:dubnium
-    working_directory: ~/repo
-  gcloud:
-    docker:
-      - image: google/cloud-sdk
-    working_directory: ~/repo
-
-commands:
-  notify-approval-slack:
-    parameters:
-      message:
-        description: Message to send
-        type: string
-        default: "Hello World !"
-    steps:
-      - run:
-          name: Notify approval step in slack circleci-approval
-          command: .circleci/scripts/notify_slack ${SLACK_CIRCLECI_APPROVAL} "<< parameters.message >>"
-
-  notify-mep-slack:
-    parameters:
-      message:
-        description: Message to send
-        type: string
-        default: "Hello World !"
-    steps:
-      - run:
-          name: Notify approval step in slack circleci-approval
-          command: .circleci/scripts/notify_slack ${SLACK_CIRCLECI_MEP} "<< parameters.message >>"
-
-  auto-update-pivotal:
-    steps:
-      - run:
-          name: Update pivotal ticket if needed
-          command: .circleci/scripts/auto_update_pivotal
-
-  publish-to-npm:
-    parameters:
-      package-json-path:
-        description: path to the package.json you want to publish
-        type: string
-        default: ~/repo/package.json
-      npm-organization-scope:
-        description: npm organization name
-        type: string
-        default: keplr
-      target-tag:
-        description: target tag to apply
-        type: string
-        default: ${CIRCLE_TAG}
-    steps:
-      - run:
-          name: Publish a package to npm
-          command: ./node_modules/.bin/push_to_npm << parameters.package-json-path >> "<< parameters.npm-organization-scope >>" "<< parameters.target-tag >>"
+      - image: keplr/node:10.15
 
 jobs:
-  install-deps:
-    executor: nodejs
+  deps-n-test-n-build:
+    executor: ci-node
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v2-dependencies-{{ checksum "yarn.lock" }}
+            - v3-dependencies-{{ checksum "yarn.lock" }}
       - run: yarn install --frozen-lockfile
       - save_cache:
-          paths:
-            - node_modules
-          key: v2-dependencies-{{ checksum "yarn.lock" }}
-      - persist_to_workspace:
-          root: .
-          paths:
-              - '*'
-
-  test:
-    executor: nodejs
-    steps:
-      - attach_workspace:
-          at: .
+          paths: node_modules
+          key: v3-dependencies-{{ checksum "yarn.lock" }}
       - run: yarn test
-
-  build:
-    executor: nodejs
-    steps:
-      - attach_workspace:
-          at: .
       - run: yarn build
       - persist_to_workspace:
           root: .
-          paths:
-              - '*'
+          paths: '*'
 
   deploy-to-npm:
-    executor: nodejs
+    executor: ci-node
     steps:
       - attach_workspace:
           at: .
-      - publish-to-npm
+      - run: keplrPublish --npm --npm-token-name NPM_TOKEN_PUBLISH --npm-target-tag ${CIRCLE_TAG}
 
 workflows:
   ## Development workflow
   build_and_test:
     jobs:
-      - install-deps:
-          filters:
-            branches:
-              only:
-                - /.*/
-            tags:
-              ignore:
-                - /.*/
-      - test:
-          requires:
-            - install-deps
-          filters:
-            branches:
-              only:
-                - /.*/
-            tags:
-              ignore:
-                - /.*/
-      - build:
-          requires:
-            - install-deps
-          filters:
-            branches:
-              only:
-                - /.*/
-            tags:
-              ignore:
-                - /.*/
-
-  ## Deploy to NPM workflow
-  deploy_to_npm:
-    jobs:
-      - install-deps:
+      - deps-n-test-n-build:
           filters:
             tags:
-              only:
-                - /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
-            branches:
-              ignore:
-                - /.*/
-      - test:
-          requires:
-            - install-deps
-          filters:
-            tags:
-              only:
-                - /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
-            branches:
-              ignore:
-                - /.*/
-      - build:
-          requires:
-            - install-deps
-          filters:
-            tags:
-              only:
-                - /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
-            branches:
-              ignore:
-                - /.*/
+              only: /.*/
       - deploy-to-npm:
           requires:
-            - build
-            - test
+            - deps-n-test-n-build
           filters:
             tags:
-              only:
-                - /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
+              only: /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
             branches:
-              ignore:
-                - /.*/
+              ignore: /.*/
