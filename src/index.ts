@@ -161,7 +161,10 @@ function _MergeObjects<
  * want the narrowest type possible
  * @param els
  */
-function _Enum<T extends string[], R extends boolean>(els: T, required: R) {
+function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
+    els: T,
+    required: R,
+) {
     return {
         getJsonSchema: () => {
             return {
@@ -169,7 +172,7 @@ function _Enum<T extends string[], R extends boolean>(els: T, required: R) {
                 enum: els,
             };
         },
-        type: (undefined as unknown) as T[0],
+        type: (undefined as unknown) as T[number],
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
