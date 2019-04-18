@@ -90,6 +90,16 @@ it('works with any schema', () => {
     expect(cs.getJsonSchema()).toEqual({});
 });
 
+it('works with unknown schema', () => {
+    const cs = CS.Unknown(true);
+    type type_ = typeof cs.type;
+
+    checkType<type_>(2);
+    checkType<type_>('abc');
+    checkType<type_>({ a: 1 });
+    expect(cs.getJsonSchema()).toEqual({});
+});
+
 it('works with object schema', () => {
     const obj = CS.Object(
         {
