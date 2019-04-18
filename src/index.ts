@@ -108,7 +108,9 @@ function _Object<P extends Props, R extends boolean>(props: P, required: R) {
 
             const ret = {
                 type: 'object',
-                properties: _.mapValues(props, v => v.getJsonSchema()),
+                properties: _.mapValues(props, v =>
+                    v.getJsonSchema(),
+                ) as Record<string, any>,
                 additionalProperties: false,
             };
             return propsRequired.length > 0
