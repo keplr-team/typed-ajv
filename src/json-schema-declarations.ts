@@ -1,7 +1,12 @@
 /** JSON Schema basic options.
  * All options must extend this interface.
  */
-export interface Options {} // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface Options {
+    /** The Open API Specification description
+     *  CommonMark syntax MAY be used for rich text representation.
+     */
+    description?: string;
+}
 
 /** JSON Schema options for strings */
 export interface StringOptions extends Options {
