@@ -333,3 +333,12 @@ it('works with enum schema', () => {
         enum: ['a', 'b'],
     });
 });
+
+it('works with an arbitrary schema', () => {
+    const cs = CS.Schema<string, true>({ type: 'string' }, true);
+    type csType = typeof cs.type;
+
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'string',
+    });
+});
