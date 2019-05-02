@@ -8,8 +8,8 @@ Define your schema:
 
 ```typescript
 const cs = CS.Object({
-    a: CS.String(true),
-    b: CS.Number(false),
+  a: CS.String(true),
+  b: CS.Number(false),
 });
 ```
 
@@ -29,7 +29,7 @@ Validate your input data and type it :
 
 ```typescript
 if (ajv.validate(jsonSchema, inputData)) {
-    const data: Type = inputData;
+  const data: Type = inputData;
 }
 ```
 
@@ -48,13 +48,14 @@ if (ajv.validate(jsonSchema, inputData)) {
 
 ## Supported compound types
 
-| Type         | Description                                                                |
-| ------------ | -------------------------------------------------------------------------- |
-| AnyOf        | Any type within a selection of definitions                                 |
-| Array        | An array of a type                                                         |
-| Enum         | A string with enumerated values                                            |
-| Object       | An object with typed properties                                            |
-| MergeObjects | Merge two object definitions into one object containing all the properties |
+| Type         | Description                                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| AnyOf        | Any type within a selection of definitions                                                                                                |
+| Array        | An array of a type                                                                                                                        |
+| Enum         | A string with enumerated values                                                                                                           |
+| Object       | An object with typed properties                                                                                                           |
+| MergeObjects | Merge two object definitions into one object containing all the properties                                                                |
+| Select       | A [select/case](https://github.com/epoberezkin/ajv-keywords#selectselectcasesselectdefault) schema to validate depending on an expression |
 
 ## Helpers
 

@@ -551,6 +551,84 @@ describe('typed-ajv', () => {
     });
   });
 
+  describe('Select()', () => {
+    it('works with select-case schema', () => {
+      const cs = CS.Select(true, '1/otherProp', {
+        foo: CS.String(true),
+        bar: CS.Boolean(true),
+      });
+      type csType = typeof cs.type;
+
+      checkType<csType>('str');
+      checkType<csType>(true);
+
+      expect(cs.getJsonSchema()).toEqual({
+        select: { $data: '1/otherProp' },
+        selectCases: {
+          foo: { type: 'string', transform: ['trim'] },
+          bar: { type: 'boolean' },
+        },
+      });
+    });
+
+    it('works with select-case schema and a default case', () => {
+      const cs = CS.Select(
+        true,
+        '1/otherProp',
+        {
+          foo: CS.String(true),
+          bar: CS.Boolean(true),
+        },
+        CS.Number(false),
+      );
+      type csType = typeof cs.type;
+
+      checkType<csType>('str');
+      checkType<csType>(true);
+      checkType<csType>(12);
+
+      expect(cs.getJsonSchema()).toEqual({
+        select: { $data: '1/otherProp' },
+        selectCases: {
+          foo: { type: 'string', transform: ['trim'] },
+          bar: { type: 'boolean' },
+        },
+        selectDefault: { type: 'number' },
+      });
+    });
+
+    it('is included in a required schema', () => {
+      const cs = CS.Object(
+        {
+          foo: CS.Select(true, '1/otherProp', {
+            foo: CS.String(true),
+            bar: CS.Boolean(false),
+          }),
+        },
+        true,
+      );
+      type csType = typeof cs.type;
+
+      checkType<csType>({ foo: 'str' });
+      checkType<csType>({ foo: true });
+
+      expect(cs.getJsonSchema()).toEqual({
+        type: 'object',
+        properties: {
+          foo: {
+            select: { $data: '1/otherProp' },
+            selectCases: {
+              foo: { type: 'string', transform: ['trim'] },
+              bar: { type: 'boolean' },
+            },
+          },
+        },
+        required: ['foo'],
+        additionalProperties: false,
+      });
+    });
+  });
+
   describe('Const()', () => {
     it('works with const schema', () => {
       const cs = CS.Const(42 as const, true);
