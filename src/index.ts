@@ -319,6 +319,43 @@ function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
   };
 }
 
+function _Select<
+  R extends boolean,
+  Cases extends string,
+  Case extends CommonSchema<unknown, unknown>,
+  Otherwise extends [CommonSchema<unknown, unknown>] | []
+>(
+  required: R,
+  expression: string,
+  cases: Record<Cases, Case>,
+  ...otherwise: Otherwise
+) {
+  return {
+    getJsonSchema() {
+      const schema: {
+        select: { $data: string };
+        selectCases: Record<Cases, unknown>;
+        selectDefault?: unknown;
+      } = {
+        select: { $data: expression },
+        selectCases: _.mapValues(cases, v => v.getJsonSchema()),
+      };
+
+      if (otherwise.length && otherwise[0]) {
+        schema.selectDefault = otherwise[0].getJsonSchema();
+      }
+
+      return schema;
+    },
+
+    type: (undefined as unknown) as Otherwise['length'] extends 1
+      ? Case['type'] | Otherwise[number]['type']
+      : Case['type'],
+
+    isRequired: required,
+  };
+}
+
 /** returns a CS function that takes the arguments of csFunc and a "required" argument as
  * the last argument.
  *
@@ -371,6 +408,19 @@ export const CS = {
   Array: _Array,
   MergeObjects: _MergeObjects,
   Enum: _Enum,
+
+  /**
+   * Creates a select/case schema.
+   *
+   * The `required` attribute of cases is ignored in favor of select's own required value.
+   *
+   * @param expression Expression to use as reference for the select.
+   * @param cases Object with keys as matching value and values as schema to use when the key matches.
+   * @param otherwise Schema to be used if none of the cases matches.
+   *
+   * @example CS.Select(true, '1/siblingProperty', { foo: CS.String(true), bar: CS.Boolean(true) })
+   */
+  Select: _Select,
 
   /**
    * Accept any of the schemas from the 1st argument.

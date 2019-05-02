@@ -220,6 +220,89 @@ expectNotAssignable<number | string>(
   CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
 );
 
+// Select
+
+expectType<string | boolean>(
+  CS.Select(true, '1/otherProp', {
+    foo: CS.String(true),
+    bar: CS.Boolean(true),
+  }).type,
+);
+
+expectNotAssignable<number>(
+  CS.Select(true, '1/otherProp', {
+    foo: CS.String(true),
+    bar: CS.Boolean(true),
+  }).type,
+);
+
+expectAssignable<{ foo: string | boolean }>(
+  CS.Object(
+    {
+      foo: CS.Select(true, '1/otherProp', {
+        foo: CS.String(true),
+        bar: CS.Boolean(true),
+      }),
+    },
+    true,
+  ).type,
+);
+
+expectAssignable<{ foo?: string | boolean }>(
+  CS.Object(
+    {
+      foo: CS.Select(false, '1/otherProp', {
+        foo: CS.String(true),
+        bar: CS.Boolean(true),
+      }),
+    },
+    true,
+  ).type,
+);
+
+expectNotAssignable<{ foo: string | boolean }>(
+  CS.Object(
+    {
+      foo: CS.Select(false, '1/otherProp', {
+        foo: CS.String(true),
+        bar: CS.Boolean(true),
+      }),
+    },
+    true,
+  ).type,
+);
+
+expectNotAssignable<number>(
+  CS.Select(true, '1/otherProp', {
+    foo: CS.String(true),
+    bar: CS.Boolean(true),
+  }).type,
+);
+
+expectType<string | boolean | null>(
+  CS.Select(
+    true,
+    '1/otherProp',
+    {
+      foo: CS.String(true),
+      bar: CS.Boolean(true),
+    },
+    CS.Null(true),
+  ).type,
+);
+
+expectNotAssignable<number>(
+  CS.Select(
+    true,
+    '1/otherProp',
+    {
+      foo: CS.String(true),
+      bar: CS.Boolean(true),
+    },
+    CS.Null(true),
+  ).type,
+);
+
 // Required
 
 expectType<string>(CS.Required(CS.String(false)).type);
