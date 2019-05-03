@@ -154,10 +154,23 @@ function _MergeObjects<
     B extends CommonSchema<any>,
     R extends boolean
 >(obj1: A, obj2: B, required: R) {
+    const s1 = obj1.getJsonSchema();
+    const s2 = obj2.getJsonSchema();
+
+    const intersection = _.intersection(
+        Object.keys(s1.properties),
+        Object.keys(s2.properties),
+    );
+    if (intersection.length) {
+        throw new Error(
+            `Merging of duplicate properties "${intersection.join(
+                '", "',
+            )}" is not allowed`,
+        );
+    }
+
     return {
         getJsonSchema: () => {
-            const s1 = obj1.getJsonSchema();
-            const s2 = obj2.getJsonSchema();
             return {
                 type: 'object',
                 properties: { ...s1.properties, ...s2.properties },

@@ -286,6 +286,28 @@ it('works with mergeobjects schema and no required fields', () => {
     });
 });
 
+it('rejects mergeobjects with duplicate keys', () => {
+    expect(() =>
+        CS.MergeObjects(
+            CS.Object(
+                {
+                    a: CS.String(true),
+                    b: CS.String(true),
+                },
+                true,
+            ),
+            CS.Object(
+                {
+                    a: CS.String(true),
+                    b: CS.String(true),
+                },
+                true,
+            ),
+            true,
+        ),
+    ).toThrowError('Merging of duplicate properties "a", "b" is not allowed');
+});
+
 it('works with array schema', () => {
     const arr = CS.Array(CS.String(true), true);
     type arrType = typeof arr.type;
