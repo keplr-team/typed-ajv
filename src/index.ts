@@ -99,7 +99,11 @@ interface Props {
     [key: string]: CommonSchema<any>;
 }
 
-function _Object<P extends Props, R extends boolean>(props: P, required: R) {
+function _Object<P extends Props, R extends boolean>(
+    props: P,
+    required: R,
+    opts?: Options,
+) {
     return {
         getJsonSchema: () => {
             const propsRequired = _.map(props, (v, k) =>
@@ -112,6 +116,7 @@ function _Object<P extends Props, R extends boolean>(props: P, required: R) {
                     v.getJsonSchema(),
                 ) as Record<string, any>,
                 additionalProperties: false,
+                ...opts,
             };
             return propsRequired.length > 0
                 ? { ...ret, required: propsRequired }
@@ -174,12 +179,14 @@ function _MergeObjects<
 function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
     els: T,
     required: R,
+    opts?: Options,
 ) {
     return {
         getJsonSchema: () => {
             return {
                 type: 'string',
                 enum: els,
+                ...opts,
             };
         },
         type: (undefined as unknown) as T[number],
