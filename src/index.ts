@@ -38,10 +38,6 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
-type ExtractType<P> = P extends CommonSchemaWithoutIsRequired<infer T>
-    ? T
-    : never;
-
 function _String(opts?: StringOptions) {
     return {
         getJsonSchema: () => ({
@@ -198,17 +194,19 @@ function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
     };
 }
 
-function _AnyOf<
-    T extends CommonSchemaWithoutIsRequired<unknown>,
-    R extends boolean
->(schemas: T[], required: R) {
+function _AnyOf<T extends CommonSchema<unknown>[], R extends boolean>(
+    schemas: T,
+    required: R,
+    opts?: Options,
+) {
     return {
         getJsonSchema() {
             return {
                 anyOf: schemas.map(s => s.getJsonSchema()),
+                ...opts,
             };
         },
-        type: (undefined as unknown) as ExtractType<T>,
+        type: (undefined as unknown) as T[number]['type'],
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
