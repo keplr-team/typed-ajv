@@ -57,3 +57,10 @@ export interface ArrayOptions extends Options {
     /** Array must have only unique values */
     uniqueItems?: boolean;
 }
+
+/**
+ * JSON Schema options for objects
+ */
+export interface ObjectOptions extends Options {
+    additionalProperties?: boolean;
+}

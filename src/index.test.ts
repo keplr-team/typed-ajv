@@ -198,6 +198,49 @@ it('works with object schema with all optional', () => {
     });
 });
 
+it('works with object schema and options', () => {
+    const obj = CS.Object(
+        {
+            a: CS.String(true),
+            b: CS.String(false),
+        },
+        true,
+        { description: 'object', additionalProperties: true },
+    );
+    type objType = typeof obj.type;
+
+    checkType<objType>({
+        a: 'b',
+        b: undefined,
+    });
+    checkType<objType>({
+        a: 'b',
+        b: 'b',
+    });
+    checkType<objType>({
+        a: 'b',
+        b: 'b',
+        anotherProp: 42,
+    });
+
+    expect(obj.getJsonSchema()).toEqual({
+        type: 'object',
+        additionalProperties: true,
+        description: 'object',
+        properties: {
+            a: {
+                type: 'string',
+                transform: ['trim'],
+            },
+            b: {
+                type: 'string',
+                transform: ['trim'],
+            },
+        },
+        required: ['a'],
+    });
+});
+
 it('works with mergeobjects schema', () => {
     const obj = CS.MergeObjects(
         CS.Object(
