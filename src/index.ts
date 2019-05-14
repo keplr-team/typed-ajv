@@ -194,6 +194,15 @@ function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
     };
 }
 
+/** Arbitrary sub-schema */
+function _Schema<Type, R extends boolean>(jsonSchema: object, required: R) {
+    return {
+        getJsonSchema: () => jsonSchema,
+        type: (undefined as unknown) as Type,
+        isRequired: (required as unknown) as R extends true ? true : false,
+    };
+}
+
 /** returns a CS function that takes the arguments of csFunc and a "required" argument as
  * the last argument.
  *
@@ -229,4 +238,5 @@ export const CS = {
     Array: _Array,
     MergeObjects: _MergeObjects,
     Enum: _Enum,
+    Schema: _Schema,
 };
