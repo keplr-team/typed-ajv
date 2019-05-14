@@ -9,7 +9,7 @@ Define your schema:
 ```typescript
 const cs = CS.Object({
     a: CS.String(true),
-    b: CS.Number(false)
+    b: CS.Number(false),
 });
 ```
 
@@ -33,15 +33,16 @@ if (ajv.validate(jsonSchema, inputData)) {
 }
 ```
 
-# Supported primitive types
+## Supported primitive types
 
 | Type    | Description                 |
 | ------- | --------------------------- |
-| Boolean |
-| Number  |
-| Integer | An integer type as `number` |
-| String  |
 | Any     | Anything                    |
+| Boolean |
+| Integer | An integer type as `number` |
+| Number  |
+| String  |
+| Unknown | Anything typed as `unknown` |
 
 ## Supported compound types
 
@@ -52,4 +53,3 @@ if (ajv.validate(jsonSchema, inputData)) {
 | Enum         | A string with enumerated values                                            |
 | Object       | An object with typed properties                                            |
 | MergeObjects | Merge two object definitions into one object containing all the properties |
-| Schema       | An arbitrary json schema and an arbitrary typescript test                  |
