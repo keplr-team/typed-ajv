@@ -38,6 +38,10 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
+type ExtractType<P> = P extends CommonSchemaWithoutIsRequired<infer T>
+    ? T
+    : never;
+
 function _String(opts?: StringOptions) {
     return {
         getJsonSchema: () => ({
@@ -194,6 +198,21 @@ function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
     };
 }
 
+function _AnyOf<
+    T extends CommonSchemaWithoutIsRequired<unknown>,
+    R extends boolean
+>(schemas: T[], required: R) {
+    return {
+        getJsonSchema() {
+            return {
+                anyOf: schemas.map(s => s.getJsonSchema()),
+            };
+        },
+        type: (undefined as unknown) as ExtractType<T>,
+        isRequired: (required as unknown) as R extends true ? true : false,
+    };
+}
+
 /** returns a CS function that takes the arguments of csFunc and a "required" argument as
  * the last argument.
  *
@@ -229,4 +248,10 @@ export const CS = {
     Array: _Array,
     MergeObjects: _MergeObjects,
     Enum: _Enum,
+
+    /**
+     * Accept any of the schemas from the 1st argument.
+     * Note: required attribute of schemas is not used, only the one for AnyOf.
+     */
+    AnyOf: _AnyOf,
 };
