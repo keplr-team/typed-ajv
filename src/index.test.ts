@@ -333,3 +333,30 @@ it('works with enum schema', () => {
         enum: ['a', 'b'],
     });
 });
+
+it('generates an anyOf schema', () => {
+    const cs = CS.Object(
+        {
+            foo: CS.AnyOf([CS.String(true), CS.Boolean(true)], true),
+        },
+        true,
+    );
+    type csType = typeof cs.type;
+
+    checkType<csType>({ foo: 'foo' });
+    checkType<csType>({ foo: true });
+
+    expect(cs.getJsonSchema()).toEqual({
+        type: 'object',
+        required: ['foo'],
+        additionalProperties: false,
+        properties: {
+            foo: {
+                anyOf: [
+                    { type: 'string', transform: ['trim'] },
+                    { type: 'boolean' },
+                ],
+            },
+        },
+    });
+});
