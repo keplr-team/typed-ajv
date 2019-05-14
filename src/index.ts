@@ -4,6 +4,7 @@ import {
     NumericOptions,
     ArrayOptions,
     Options,
+    ObjectOptions,
 } from './json-schema-declarations';
 
 /**
@@ -99,10 +100,10 @@ interface Props {
     [key: string]: CommonSchema<any>;
 }
 
-function _Object<P extends Props, R extends boolean>(
+function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
     props: P,
     required: R,
-    opts?: Options,
+    opts?: O,
 ) {
     return {
         getJsonSchema: () => {
@@ -125,7 +126,10 @@ function _Object<P extends Props, R extends boolean>(
         type: (undefined as unknown) as {
             [k in GetRequiredKeys<P>]: P[k]['type']
         } &
-            { [k in GetOptionalKeys<P>]?: P[k]['type'] },
+            { [k in GetOptionalKeys<P>]?: P[k]['type'] } &
+            (O['additionalProperties'] extends true
+                ? { [k: string]: unknown }
+                : {}),
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
