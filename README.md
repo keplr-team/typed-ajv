@@ -39,6 +39,7 @@ if (ajv.validate(jsonSchema, inputData)) {
 | ------- | --------------------------- |
 | Any     | Anything                    |
 | Boolean |
+| Const   | Constant of any type        |
 | Integer | An integer type as `number` |
 | Number  |
 | String  |

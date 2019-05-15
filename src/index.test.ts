@@ -387,7 +387,7 @@ it('works with array schema and opts', () => {
 it('works with enum schema', () => {
     const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true);
     const csTuple = CS.Enum(['a', 'b'] as ['a', 'b'], true);
-    const csRo = CS.Enum(['a', 'b'] as ReadonlyArray<'a' | 'b'>, true);
+    const csRo = CS.Enum(['a', 'b'] as const, true);
     type csType = typeof cs.type;
 
     checkType<csType>('a');
@@ -424,4 +424,13 @@ it('generates an anyOf schema', () => {
             },
         },
     });
+});
+
+it('works with const schema', () => {
+    const cs = CS.Const(42 as const, true);
+    type csType = typeof cs.type;
+
+    checkType<csType>(42);
+
+    expect(cs.getJsonSchema()).toEqual({ const: 42 });
 });

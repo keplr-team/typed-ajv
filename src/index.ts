@@ -87,6 +87,16 @@ function _Unknown() {
     };
 }
 
+function _Const<V, R extends boolean>(value: V, required: R) {
+    return {
+        getJsonSchema() {
+            return { const: value };
+        },
+        type: value,
+        isRequired: (required as unknown) as R extends true ? true : false,
+    };
+}
+
 /** The two following types return a subtype that represent the required/optional keys of
  * type T
  */
@@ -193,7 +203,7 @@ function _MergeObjects<
  * want the narrowest type possible
  * @param els
  */
-function _Enum<T extends ReadonlyArray<string>, R extends boolean>(
+function _Enum<T extends readonly string[], R extends boolean>(
     els: T,
     required: R,
     opts?: Options,
@@ -257,6 +267,14 @@ export const CS = {
     Any: addRequiredArg(_Any),
     /** Accept any value and type it as unknown */
     Unknown: addRequiredArg(_Unknown),
+
+    /**
+     * Accept a value matching a constant.
+     * @param value Any value. Note: in TypeScript, this parameter must be of a literal type.
+     * @param required Boolean indicating whether this property is required or not.
+     * @example CS.Const('select' as const)
+     */
+    Const: _Const,
 
     // Compound types
     Object: _Object,
