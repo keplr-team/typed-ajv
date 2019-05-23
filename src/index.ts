@@ -284,7 +284,7 @@ export const CS = {
     Const: _Const,
 
     /** Accept only null */
-    Null: _Null,
+    Null: addRequiredArg(_Null),
 
     // Compound types
     Object: _Object,
