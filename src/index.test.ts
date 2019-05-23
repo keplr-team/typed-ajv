@@ -436,7 +436,7 @@ it('works with const schema', () => {
 });
 
 it('works with null schema', () => {
-    const cs = CS.Null();
+    const cs = CS.Null(true);
     type csType = typeof cs.type;
 
     checkType<csType>(null);
