@@ -44,6 +44,7 @@ if (ajv.validate(jsonSchema, inputData)) {
 | Number  |
 | String  |
 | Unknown | Anything typed as `unknown` |
+| Null    | Only `null`                 |
 
 ## Supported compound types
 
