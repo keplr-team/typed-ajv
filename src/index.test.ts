@@ -434,3 +434,12 @@ it('works with const schema', () => {
 
     expect(cs.getJsonSchema()).toEqual({ const: 42 });
 });
+
+it('works with null schema', () => {
+    const cs = CS.Null();
+    type csType = typeof cs.type;
+
+    checkType<csType>(null);
+
+    expect(cs.getJsonSchema()).toEqual({ type: 'null' });
+});

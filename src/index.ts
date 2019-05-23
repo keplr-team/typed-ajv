@@ -97,6 +97,13 @@ function _Const<V, R extends boolean>(value: V, required: R) {
     };
 }
 
+function _Null() {
+    return {
+        getJsonSchema: () => ({ type: 'null' as 'null' }),
+        type: null,
+    };
+}
+
 /** The two following types return a subtype that represent the required/optional keys of
  * type T
  */
@@ -275,6 +282,9 @@ export const CS = {
      * @example CS.Const('select' as const)
      */
     Const: _Const,
+
+    /** Accept only null */
+    Null: _Null,
 
     // Compound types
     Object: _Object,
