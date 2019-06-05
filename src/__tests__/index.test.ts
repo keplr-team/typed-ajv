@@ -348,7 +348,7 @@ describe('typed-ajv', () => {
                     ),
                     true,
                 ),
-            ).toThrowError(
+            ).toThrow(
                 'Merging of duplicate properties "a", "b" is not allowed',
             );
         });
@@ -544,5 +544,69 @@ describe('typed-ajv', () => {
 
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
+    });
+
+    it('sets defaults', () => {
+        expect(
+            CS.Any(true, { default: true }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.AnyOf([CS.Boolean(true), CS.Number(true)], false, {
+                default: false,
+            }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Array(CS.Boolean(true), true, {
+                default: [true],
+            }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Boolean(true, { default: false }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Const(true as const, false, { default: true }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Enum(['a', 'b', 'c'] as const, true, {
+                default: 'b',
+            }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Null(false, { default: null }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.Number(true, { default: 123 }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.String(true, { default: 'anything' }).getJsonSchema(),
+        ).toEqual({
+            type: 'string',
+            transform: ['trim'],
+            default: 'anything',
+        });
+
+        expect(
+            CS.Unknown(true, { default: false }).getJsonSchema(),
+        ).toMatchSnapshot();
+
+        expect(
+            CS.MergeObjects(
+                CS.Object({ a: CS.String(true) }, true, {
+                    default: { a: 'foo' },
+                }),
+                CS.Object({ b: CS.String(false) }, true, {
+                    default: { b: '123' },
+                }),
+                false,
+            ).getJsonSchema(),
+        ).toMatchSnapshot();
     });
 });

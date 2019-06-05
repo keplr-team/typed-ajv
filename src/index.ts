@@ -1,7 +1,10 @@
 import * as _ from 'lodash';
 import {
+    AnyOfOptions,
     ArrayOptions,
     BooleanOptions,
+    ConstOptions,
+    EnumOptions,
     NumericOptions,
     ObjectOptions,
     Options,
@@ -43,7 +46,7 @@ interface CommonSchemaWithoutIsRequired<T> {
 // Used to work around a bug in typescript where unprovided options are considered "any"
 type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
 
-type Nullable<T, O extends Options> = IfAny<
+type Nullable<T, O extends Options<any>> = IfAny<
     O,
     T,
     O['nullable'] extends true ? T | null : T
@@ -85,7 +88,7 @@ function _Boolean(opts?: BooleanOptions) {
     };
 }
 
-function _Any(opts?: Options) {
+function _Any(opts?: Options<any>) {
     return {
         getJsonSchema: () => ({ ...opts }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +96,7 @@ function _Any(opts?: Options) {
     };
 }
 
-function _Unknown(opts?: Options) {
+function _Unknown(opts?: Options<unknown>) {
     return {
         getJsonSchema: () => ({ ...opts }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,7 +104,7 @@ function _Unknown(opts?: Options) {
     };
 }
 
-function _Const<V, R extends boolean, O extends Options>(
+function _Const<V, R extends boolean, O extends ConstOptions<V>>(
     value: V,
     required: R,
     opts?: O,
@@ -115,9 +118,9 @@ function _Const<V, R extends boolean, O extends Options>(
     };
 }
 
-function _Null() {
+function _Null(opts?: Options<null>) {
     return {
-        getJsonSchema: () => ({ type: 'null' as 'null' }),
+        getJsonSchema: () => ({ type: 'null' as 'null', ...opts }),
         type: null,
     };
 }
@@ -222,6 +225,9 @@ function _MergeObjects<
                 required: [...(s1.required || []), ...(s2.required || [])],
                 additionalProperties: false,
                 ...(typeof nullable === 'boolean' ? { nullable } : undefined),
+                ...(s1.default || s2.default
+                    ? { ...s1.default, ...s2.default }
+                    : undefined),
             };
         },
         type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
@@ -238,7 +244,7 @@ function _MergeObjects<
 function _Enum<
     T extends readonly string[],
     R extends boolean,
-    O extends Options
+    O extends EnumOptions<T>
 >(els: T, required: R, opts?: O) {
     return {
         getJsonSchema: () => {
@@ -256,7 +262,7 @@ function _Enum<
 function _AnyOf<
     T extends CommonSchema<unknown>[],
     R extends boolean,
-    O extends Options
+    O extends AnyOfOptions<Nullable<T[number]['type'], O>>
 >(schemas: T, required: R, opts?: O) {
     return {
         getJsonSchema() {
@@ -278,7 +284,7 @@ function _AnyOf<
  */
 function addRequiredArg<
     Ret extends CommonSchemaWithoutIsRequired<any>,
-    CSOptions extends Options
+    CSOptions extends Options<Ret['type']>
 >(csFunc: (opts?: CSOptions) => Ret) {
     function withRequired<T extends boolean, O extends CSOptions>(
         required: T,
