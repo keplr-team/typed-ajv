@@ -3,46 +3,56 @@ version: 2.1
 executors:
   ci-node:
     docker:
-      - image: keplr/node:10.15
+    - image: keplr/node-ci:12
 
 jobs:
-  deps-n-test-n-build:
+  deps-n-test:
     executor: ci-node
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v4-dependencies-{{ checksum "yarn.lock" }}
-      - run: yarn install --frozen-lockfile
-      - save_cache:
-          paths: ~/.cache/yarn
-          key: v4-dependencies-{{ checksum "yarn.lock" }}
-      - run: yarn test
-      - run: yarn build
-      - persist_to_workspace:
-          root: .
-          paths: '*'
+    - checkout
+    - restore_cache:
+        keys:
+        - v4-dependencies-{{ checksum "yarn.lock" }}
+        - v4-dependencies-
+    - run: yarn install --frozen-lockfile
+    - save_cache:
+        paths: ~/.cache/yarn
+        key: v4-dependencies-{{ checksum "yarn.lock" }}
+    - run: yarn test
+    - run: yarn build
+    - persist_to_workspace:
+        root: .
+        paths: '*'
 
   deploy-to-npm:
     executor: ci-node
     steps:
-      - attach_workspace:
-          at: .
-      - run: keplrPublish --npm --npm-token-name NPM_TOKEN_PUBLISH --npm-target-tag ${CIRCLE_TAG}
+    - attach_workspace:
+        at: .
+    - run: keplrPublish --npm --npm-token-name NPM_TOKEN_PUBLISH --npm-target-tag ${CIRCLE_TAG}
+
+
+envs-matcher:
+  build: &build
+    filters:
+      branches:
+        only: /.*/
+      tags:
+        only: /.*/
+
+  deploy: &deploy
+    filters:
+      branches:
+        ignore: /.*/
+      tags:
+        only: /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
 
 workflows:
-  ## Development workflow
-  build_and_test:
+  build_n_test_n_deploy:
     jobs:
-      - deps-n-test-n-build:
-          filters:
-            tags:
-              only: /.*/
-      - deploy-to-npm:
-          requires:
-            - deps-n-test-n-build
-          filters:
-            tags:
-              only: /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
-            branches:
-              ignore: /.*/
+    - deps-n-test:
+        <<: *build
+    - deploy-to-npm:
+        <<: *deploy
+        requires:
+        - deps-n-test
