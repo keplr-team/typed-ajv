@@ -19,6 +19,15 @@ describe('typed-ajv', () => {
             checkType<strType>('abcd');
             expect(str.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with string schema and nullable option', () => {
+            const str = CS.String(true, { nullable: true });
+            type strType = typeof str.type;
+
+            checkType<strType>('abcd');
+            checkType<strType>(null);
+            expect(str.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('Number()', () => {
@@ -40,6 +49,15 @@ describe('typed-ajv', () => {
             checkType<type_>(2);
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with number schema and nullable option', () => {
+            const cs = CS.Number(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            checkType<type_>(null);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('Integer()', () => {
@@ -58,6 +76,14 @@ describe('typed-ajv', () => {
             checkType<type_>(2);
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with integer schema and nullable option', () => {
+            const cs = CS.Integer(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('Boolean()', () => {
@@ -66,6 +92,15 @@ describe('typed-ajv', () => {
             type type_ = typeof cs.type;
 
             checkType<type_>(true);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with boolean schema and nullable option', () => {
+            const cs = CS.Boolean(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(true);
+            checkType<type_>(null);
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
     });
@@ -78,6 +113,17 @@ describe('typed-ajv', () => {
             checkType<type_>(2);
             checkType<type_>('abc');
             checkType<type_>({ a: 1 });
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with any schema and nullable option', () => {
+            const cs = CS.Any(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            checkType<type_>('abc');
+            checkType<type_>({ a: 1 });
+            checkType<type_>(null);
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
     });
@@ -180,6 +226,30 @@ describe('typed-ajv', () => {
 
             expect(obj.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with object schema and nullable option', () => {
+            const obj = CS.Object(
+                {
+                    a: CS.String(true),
+                    b: CS.String(false),
+                },
+                true,
+                { nullable: true },
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'b',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<objType>(null);
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('MergeObjects', () => {
@@ -266,6 +336,70 @@ describe('typed-ajv', () => {
                 'Merging of duplicate properties "a", "b" is not allowed',
             );
         });
+
+        it('works with mergeobjects schema and nullable option', () => {
+            const obj = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(true),
+                    },
+                    true,
+                    { nullable: true },
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                    { nullable: false },
+                ),
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'a',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<objType>(null);
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+
+            const obj2 = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(true),
+                    },
+                    true,
+                    { nullable: false },
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                    { nullable: true },
+                ),
+                true,
+            );
+            type obj2Type = typeof obj2.type;
+
+            checkType<obj2Type>({
+                a: 'a',
+                b: undefined,
+            });
+            checkType<obj2Type>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<obj2Type>(null);
+
+            expect(obj2.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('Array()', () => {
@@ -287,6 +421,15 @@ describe('typed-ajv', () => {
             checkType<arrType>(['abcd', 'abcd']);
             expect(arr.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with array schema and nullable option', () => {
+            const arr = CS.Array(CS.String(true), true, { nullable: true });
+            type arrType = typeof arr.type;
+
+            checkType<arrType>(['abcd', 'abcd']);
+            checkType<arrType>(null);
+            expect(arr.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('Enum()', () => {
@@ -298,6 +441,21 @@ describe('typed-ajv', () => {
 
             checkType<csType>('a');
             checkType<csType>('b');
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with enum schema and nullable option', () => {
+            const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true, {
+                nullable: true,
+            });
+            const csTuple = CS.Enum(['a', 'b'] as ['a', 'b'], true);
+            const csRo = CS.Enum(['a', 'b'] as const, true);
+            type csType = typeof cs.type;
+
+            checkType<csType>('a');
+            checkType<csType>('b');
+            checkType<csType>(null);
 
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });
@@ -326,6 +484,16 @@ describe('typed-ajv', () => {
             type csType = typeof cs.type;
 
             checkType<csType>(42);
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with const schema and nullable option', () => {
+            const cs = CS.Const(42 as const, true, { nullable: true });
+            type csType = typeof cs.type;
+
+            checkType<csType>(42);
+            checkType<csType>(null);
 
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });

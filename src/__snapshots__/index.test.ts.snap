@@ -2,6 +2,12 @@
 
 exports[`typed-ajv Any() works with any schema 1`] = `Object {}`;
 
+exports[`typed-ajv Any() works with any schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+}
+`;
+
 exports[`typed-ajv AnyOf() generates an anyOf schema 1`] = `
 Object {
   "additionalProperties": false,
@@ -39,6 +45,19 @@ Object {
 }
 `;
 
+exports[`typed-ajv Array() works with array schema and nullable option 1`] = `
+Object {
+  "items": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "nullable": true,
+  "type": "array",
+}
+`;
+
 exports[`typed-ajv Array() works with array schema and opts 1`] = `
 Object {
   "items": Object {
@@ -59,9 +78,23 @@ Object {
 }
 `;
 
+exports[`typed-ajv Boolean() works with boolean schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+  "type": "boolean",
+}
+`;
+
 exports[`typed-ajv Const() works with const schema 1`] = `
 Object {
   "const": 42,
+}
+`;
+
+exports[`typed-ajv Const() works with const schema and nullable option 1`] = `
+Object {
+  "const": 42,
+  "nullable": true,
 }
 `;
 
@@ -75,8 +108,26 @@ Object {
 }
 `;
 
+exports[`typed-ajv Enum() works with enum schema and nullable option 1`] = `
+Object {
+  "enum": Array [
+    "a",
+    "b",
+  ],
+  "nullable": true,
+  "type": "string",
+}
+`;
+
 exports[`typed-ajv Integer() works with integer schema 1`] = `
 Object {
+  "type": "integer",
+}
+`;
+
+exports[`typed-ajv Integer() works with integer schema and nullable option 1`] = `
+Object {
+  "nullable": true,
   "type": "integer",
 }
 `;
@@ -135,6 +186,56 @@ Object {
 }
 `;
 
+exports[`typed-ajv MergeObjects works with mergeobjects schema and nullable option 1`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv MergeObjects works with mergeobjects schema and nullable option 2`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv Null() works with null schema 1`] = `
 Object {
   "type": "null",
@@ -143,6 +244,13 @@ Object {
 
 exports[`typed-ajv Number() works with number schema 1`] = `
 Object {
+  "type": "number",
+}
+`;
+
+exports[`typed-ajv Number() works with number schema and nullable option 1`] = `
+Object {
+  "nullable": true,
   "type": "number",
 }
 `;
@@ -172,6 +280,31 @@ Object {
   "required": Array [
     "a",
     "b",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema and nullable option 1`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
   ],
   "type": "object",
 }
@@ -249,6 +382,16 @@ Object {
 
 exports[`typed-ajv String() works with string schema 1`] = `
 Object {
+  "transform": Array [
+    "trim",
+  ],
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv String() works with string schema and nullable option 1`] = `
+Object {
+  "nullable": true,
   "transform": Array [
     "trim",
   ],

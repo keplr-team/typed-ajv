@@ -6,6 +6,11 @@ export interface Options {
      *  CommonMark syntax MAY be used for rich text representation.
      */
     description?: string;
+
+    /**
+     * Allow the value to be null.
+     */
+    nullable?: boolean;
 }
 
 /** JSON Schema options for strings */
@@ -64,3 +69,5 @@ export interface ArrayOptions extends Options {
 export interface ObjectOptions extends Options {
     additionalProperties?: boolean;
 }
+
+export type BooleanOptions = Options;
