@@ -10,7 +10,7 @@ export interface Options {
     /**
      * Allow the value to be null.
      */
-    nullable?: boolean;
+    readonly nullable?: boolean;
 }
 
 /** JSON Schema options for strings */
@@ -67,7 +67,7 @@ export interface ArrayOptions extends Options {
  * JSON Schema options for objects
  */
 export interface ObjectOptions extends Options {
-    additionalProperties?: boolean;
+    readonly additionalProperties?: boolean;
 }
 
 export type BooleanOptions = Options;
