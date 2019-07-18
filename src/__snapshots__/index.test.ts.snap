@@ -1,0 +1,413 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`typed-ajv Any() works with any schema 1`] = `Object {}`;
+
+exports[`typed-ajv Any() works with any schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+}
+`;
+
+exports[`typed-ajv AnyOf() generates an anyOf schema 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "foo": Object {
+      "anyOf": Array [
+        Object {
+          "transform": Array [
+            "trim",
+          ],
+          "type": "string",
+        },
+        Object {
+          "type": "boolean",
+        },
+      ],
+    },
+  },
+  "required": Array [
+    "foo",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Array() works with array schema 1`] = `
+Object {
+  "items": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "type": "array",
+}
+`;
+
+exports[`typed-ajv Array() works with array schema and nullable option 1`] = `
+Object {
+  "items": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "nullable": true,
+  "type": "array",
+}
+`;
+
+exports[`typed-ajv Array() works with array schema and opts 1`] = `
+Object {
+  "items": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "minItems": 1,
+  "type": "array",
+  "uniqueItems": true,
+}
+`;
+
+exports[`typed-ajv Boolean() works with boolean schema 1`] = `
+Object {
+  "type": "boolean",
+}
+`;
+
+exports[`typed-ajv Boolean() works with boolean schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+  "type": "boolean",
+}
+`;
+
+exports[`typed-ajv Const() works with const schema 1`] = `
+Object {
+  "const": 42,
+}
+`;
+
+exports[`typed-ajv Const() works with const schema and nullable option 1`] = `
+Object {
+  "const": 42,
+  "nullable": true,
+}
+`;
+
+exports[`typed-ajv Enum() works with enum schema 1`] = `
+Object {
+  "enum": Array [
+    "a",
+    "b",
+  ],
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv Enum() works with enum schema and nullable option 1`] = `
+Object {
+  "enum": Array [
+    "a",
+    "b",
+  ],
+  "nullable": true,
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv Integer() works with integer schema 1`] = `
+Object {
+  "type": "integer",
+}
+`;
+
+exports[`typed-ajv Integer() works with integer schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+  "type": "integer",
+}
+`;
+
+exports[`typed-ajv Integer() works with integer schema and options 1`] = `
+Object {
+  "maximum": 4,
+  "minimum": 1,
+  "type": "integer",
+}
+`;
+
+exports[`typed-ajv MergeObjects works with mergeobjects schema 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv MergeObjects works with mergeobjects schema and no required fields 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv MergeObjects works with mergeobjects schema and nullable option 1`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv MergeObjects works with mergeobjects schema and nullable option 2`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Null() works with null schema 1`] = `
+Object {
+  "type": "null",
+}
+`;
+
+exports[`typed-ajv Number() works with number schema 1`] = `
+Object {
+  "type": "number",
+}
+`;
+
+exports[`typed-ajv Number() works with number schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+  "type": "number",
+}
+`;
+
+exports[`typed-ajv Number() works with number schema and options 1`] = `
+Object {
+  "exclusiveMaximum": 5,
+  "exclusiveMinimum": 3,
+  "type": "number",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "type": "number",
+    },
+  },
+  "required": Array [
+    "a",
+    "b",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema and nullable option 1`] = `
+Object {
+  "additionalProperties": false,
+  "nullable": true,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema and optional 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema and options 1`] = `
+Object {
+  "additionalProperties": true,
+  "description": "object",
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Object() works with object schema with all optional 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv String() works with string schema 1`] = `
+Object {
+  "transform": Array [
+    "trim",
+  ],
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv String() works with string schema and nullable option 1`] = `
+Object {
+  "nullable": true,
+  "transform": Array [
+    "trim",
+  ],
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv String() works with string schema and options 1`] = `
+Object {
+  "maxLength": 10,
+  "minLength": 1,
+  "transform": Array [
+    "trim",
+  ],
+  "type": "string",
+}
+`;
+
+exports[`typed-ajv Unknown() works with unknown schema 1`] = `Object {}`;

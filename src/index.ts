@@ -5,6 +5,7 @@ import {
     ArrayOptions,
     Options,
     ObjectOptions,
+    BooleanOptions,
 } from './json-schema-declarations';
 
 /**
@@ -39,6 +40,12 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
+type Nullable<T, O extends Options> = O['nullable'] extends true ? T | null : T;
+
+type NullableMerge<A, B> = A extends null
+    ? (A & B) | null
+    : (B extends null ? (A & B) | null : A & B);
+
 function _String(opts?: StringOptions) {
     return {
         getJsonSchema: () => ({
@@ -64,35 +71,39 @@ function _Integer(opts?: NumericOptions) {
     };
 }
 
-function _Boolean() {
+function _Boolean(opts?: BooleanOptions) {
     return {
-        getJsonSchema: () => ({ type: 'boolean' as 'boolean' }),
+        getJsonSchema: () => ({ type: 'boolean' as 'boolean', ...opts }),
         type: true as boolean,
     };
 }
 
-function _Any() {
+function _Any(opts?: Options) {
     return {
-        getJsonSchema: () => ({}),
+        getJsonSchema: () => ({ ...opts }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: 'abcd' as any,
     };
 }
 
-function _Unknown() {
+function _Unknown(opts?: Options) {
     return {
-        getJsonSchema: () => ({}),
+        getJsonSchema: () => ({ ...opts }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: 'abcd' as unknown,
     };
 }
 
-function _Const<V, R extends boolean>(value: V, required: R) {
+function _Const<V, R extends boolean, O extends Options>(
+    value: V,
+    required: R,
+    opts?: O,
+) {
     return {
         getJsonSchema() {
-            return { const: value };
+            return { const: value, ...opts };
         },
-        type: value,
+        type: value as Nullable<typeof value, O>,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
@@ -140,22 +151,23 @@ function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
                 ? { ...ret, required: propsRequired }
                 : ret;
         },
-        type: (undefined as unknown) as {
-            [k in GetRequiredKeys<P>]: P[k]['type']
-        } &
-            { [k in GetOptionalKeys<P>]?: P[k]['type'] } &
-            (O['additionalProperties'] extends true
-                ? { [k: string]: unknown }
-                : {}),
+        type: (undefined as unknown) as Nullable<
+            { [k in GetRequiredKeys<P>]: P[k]['type'] } &
+                { [k in GetOptionalKeys<P>]?: P[k]['type'] } &
+                (O['additionalProperties'] extends true
+                    ? { [k: string]: unknown }
+                    : {}),
+            O
+        >,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
 
-function _Array<P extends CommonSchema<any>, R extends boolean>(
-    type: P,
-    required: R,
-    opts?: ArrayOptions,
-) {
+function _Array<
+    P extends CommonSchema<any>,
+    R extends boolean,
+    O extends ArrayOptions
+>(type: P, required: R, opts?: O) {
     return {
         getJsonSchema: () => {
             return {
@@ -164,7 +176,7 @@ function _Array<P extends CommonSchema<any>, R extends boolean>(
                 ...opts,
             };
         },
-        type: (undefined as unknown) as P['type'][],
+        type: (undefined as unknown) as Nullable<P['type'][], O>,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
@@ -192,14 +204,16 @@ function _MergeObjects<
 
     return {
         getJsonSchema: () => {
+            const nullable = s1.nullable || s2.nullable;
             return {
                 type: 'object',
                 properties: { ...s1.properties, ...s2.properties },
                 required: [...(s1.required || []), ...(s2.required || [])],
                 additionalProperties: false,
+                ...(typeof nullable === 'boolean' ? { nullable } : undefined),
             };
         },
-        type: (undefined as unknown) as A['type'] & B['type'],
+        type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
@@ -210,11 +224,11 @@ function _MergeObjects<
  * want the narrowest type possible
  * @param els
  */
-function _Enum<T extends readonly string[], R extends boolean>(
-    els: T,
-    required: R,
-    opts?: Options,
-) {
+function _Enum<
+    T extends readonly string[],
+    R extends boolean,
+    O extends Options
+>(els: T, required: R, opts?: O) {
     return {
         getJsonSchema: () => {
             return {
@@ -223,7 +237,7 @@ function _Enum<T extends readonly string[], R extends boolean>(
                 ...opts,
             };
         },
-        type: (undefined as unknown) as T[number],
+        type: (undefined as unknown) as Nullable<T[number], O>,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
@@ -256,8 +270,10 @@ function addRequiredArg<
     CSOptions extends Options
 >(csFunc: (opts?: CSOptions) => Ret) {
     function withRequired<T extends boolean>(required: T, opts?: CSOptions) {
+        const ret = csFunc(opts);
         return {
-            ...csFunc(opts),
+            ...ret,
+            type: undefined as Nullable<typeof ret.type, CSOptions>,
             isRequired: (required as unknown) as T extends true ? true : false,
         };
     }

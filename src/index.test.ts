@@ -2,444 +2,511 @@ import { CS } from '.';
 
 const checkType = <A>(a: A) => a;
 
-it('works with string schema', () => {
-    const str = CS.String(true);
-    type strType = typeof str.type;
+describe('typed-ajv', () => {
+    describe('String()', () => {
+        it('works with string schema', () => {
+            const str = CS.String(true);
+            type strType = typeof str.type;
 
-    checkType<strType>('abcd');
-    expect(str.getJsonSchema()).toEqual({
-        type: 'string',
-        transform: ['trim'],
-    });
-});
+            checkType<strType>('abcd');
+            expect(str.getJsonSchema()).toMatchSnapshot();
+        });
 
-it('works with string schema and options', () => {
-    const str = CS.String(true, { minLength: 1, maxLength: 10 });
-    type strType = typeof str.type;
+        it('works with string schema and options', () => {
+            const str = CS.String(true, { minLength: 1, maxLength: 10 });
+            type strType = typeof str.type;
 
-    checkType<strType>('abcd');
-    expect(str.getJsonSchema()).toEqual({
-        type: 'string',
-        transform: ['trim'],
-        minLength: 1,
-        maxLength: 10,
-    });
-});
+            checkType<strType>('abcd');
+            expect(str.getJsonSchema()).toMatchSnapshot();
+        });
 
-it('works with number schema', () => {
-    const cs = CS.Number(true);
-    type type_ = typeof cs.type;
+        it('works with string schema and nullable option', () => {
+            const str = CS.String(true, { nullable: true });
+            type strType = typeof str.type;
 
-    checkType<type_>(2);
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'number',
-    });
-});
-
-it('works with number schema and options', () => {
-    const cs = CS.Number(true, { exclusiveMinimum: 3, exclusiveMaximum: 5 });
-    type type_ = typeof cs.type;
-
-    checkType<type_>(2);
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'number',
-        exclusiveMinimum: 3,
-        exclusiveMaximum: 5,
-    });
-});
-
-it('works with integer schema', () => {
-    const cs = CS.Integer(true);
-    type type_ = typeof cs.type;
-
-    checkType<type_>(2);
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'integer',
-    });
-});
-
-it('works with integer schema and options', () => {
-    const cs = CS.Integer(true, { minimum: 1, maximum: 4 });
-    type type_ = typeof cs.type;
-
-    checkType<type_>(2);
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'integer',
-        minimum: 1,
-        maximum: 4,
-    });
-});
-
-it('works with boolean schema', () => {
-    const cs = CS.Boolean(true);
-    type type_ = typeof cs.type;
-
-    checkType<type_>(true);
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'boolean',
-    });
-});
-
-it('works with any schema', () => {
-    const cs = CS.Any(true);
-    type type_ = typeof cs.type;
-
-    checkType<type_>(2);
-    checkType<type_>('abc');
-    checkType<type_>({ a: 1 });
-    expect(cs.getJsonSchema()).toEqual({});
-});
-
-it('works with unknown schema', () => {
-    const cs = CS.Unknown(true);
-    type type_ = typeof cs.type;
-
-    checkType<type_>(2);
-    checkType<type_>('abc');
-    checkType<type_>({ a: 1 });
-    expect(cs.getJsonSchema()).toEqual({});
-});
-
-it('works with object schema', () => {
-    const obj = CS.Object(
-        {
-            a: CS.String(true),
-            b: CS.Number(true),
-        },
-        true,
-    );
-    type objType = typeof obj.type;
-
-    checkType<objType>({ a: 'abcd', b: 2 });
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'number',
-            },
-        },
-        required: ['a', 'b'],
-    });
-});
-
-it('works with object schema and optional', () => {
-    const obj = CS.Object(
-        {
-            a: CS.String(true),
-            b: CS.String(false),
-        },
-        true,
-    );
-    type objType = typeof obj.type;
-
-    checkType<objType>({
-        a: 'b',
-        b: undefined,
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
+            checkType<strType>('abcd');
+            checkType<strType>(null);
+            expect(str.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'string',
-                transform: ['trim'],
-            },
-        },
-        required: ['a'],
-    });
-});
+    describe('Number()', () => {
+        it('works with number schema', () => {
+            const cs = CS.Number(true);
+            type type_ = typeof cs.type;
 
-it('works with object schema with all optional', () => {
-    const obj = CS.Object(
-        {
-            a: CS.String(false),
-            b: CS.String(false),
-        },
-        true,
-    );
-    type objType = typeof obj.type;
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
 
-    checkType<objType>({
-        a: undefined,
-        b: undefined,
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
+        it('works with number schema and options', () => {
+            const cs = CS.Number(true, {
+                exclusiveMinimum: 3,
+                exclusiveMaximum: 5,
+            });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with number schema and nullable option', () => {
+            const cs = CS.Number(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            checkType<type_>(null);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'string',
-                transform: ['trim'],
-            },
-        },
-    });
-});
+    describe('Integer()', () => {
+        it('works with integer schema', () => {
+            const cs = CS.Integer(true);
+            type type_ = typeof cs.type;
 
-it('works with object schema and options', () => {
-    const obj = CS.Object(
-        {
-            a: CS.String(true),
-            b: CS.String(false),
-        },
-        true,
-        { description: 'object', additionalProperties: true },
-    );
-    type objType = typeof obj.type;
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
 
-    checkType<objType>({
-        a: 'b',
-        b: undefined,
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
-        anotherProp: 42,
+        it('works with integer schema and options', () => {
+            const cs = CS.Integer(true, { minimum: 1, maximum: 4 });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with integer schema and nullable option', () => {
+            const cs = CS.Integer(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: true,
-        description: 'object',
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'string',
-                transform: ['trim'],
-            },
-        },
-        required: ['a'],
-    });
-});
+    describe('Boolean()', () => {
+        it('works with boolean schema', () => {
+            const cs = CS.Boolean(true);
+            type type_ = typeof cs.type;
 
-it('works with mergeobjects schema', () => {
-    const obj = CS.MergeObjects(
-        CS.Object(
-            {
-                a: CS.String(true),
-            },
-            true,
-        ),
-        CS.Object(
-            {
-                b: CS.String(false),
-            },
-            true,
-        ),
-        true,
-    );
-    type objType = typeof obj.type;
+            checkType<type_>(true);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
 
-    checkType<objType>({
-        a: 'a',
-        b: undefined,
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
+        it('works with boolean schema and nullable option', () => {
+            const cs = CS.Boolean(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(true);
+            checkType<type_>(null);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'string',
-                transform: ['trim'],
-            },
-        },
-        required: ['a'],
-    });
-});
+    describe('Any()', () => {
+        it('works with any schema', () => {
+            const cs = CS.Any(true);
+            type type_ = typeof cs.type;
 
-it('works with mergeobjects schema and no required fields', () => {
-    const obj = CS.MergeObjects(
-        CS.Object(
-            {
-                a: CS.String(false),
-            },
-            true,
-        ),
-        CS.Object(
-            {
-                b: CS.String(false),
-            },
-            true,
-        ),
-        true,
-    );
-    type objType = typeof obj.type;
+            checkType<type_>(2);
+            checkType<type_>('abc');
+            checkType<type_>({ a: 1 });
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
 
-    checkType<objType>({
-        a: undefined,
-        b: undefined,
-    });
-    checkType<objType>({
-        a: 'b',
-        b: 'b',
+        it('works with any schema and nullable option', () => {
+            const cs = CS.Any(true, { nullable: true });
+            type type_ = typeof cs.type;
+
+            checkType<type_>(2);
+            checkType<type_>('abc');
+            checkType<type_>({ a: 1 });
+            checkType<type_>(null);
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
-    expect(obj.getJsonSchema()).toEqual({
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-            a: {
-                type: 'string',
-                transform: ['trim'],
-            },
-            b: {
-                type: 'string',
-                transform: ['trim'],
-            },
-        },
-        required: [],
-    });
-});
+    describe('Unknown()', () => {
+        it('works with unknown schema', () => {
+            const cs = CS.Unknown(true);
+            type type_ = typeof cs.type;
 
-it('rejects mergeobjects with duplicate keys', () => {
-    expect(() =>
-        CS.MergeObjects(
-            CS.Object(
+            checkType<type_>(2);
+            checkType<type_>('abc');
+            checkType<type_>({ a: 1 });
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+    });
+
+    describe('Object()', () => {
+        it('works with object schema', () => {
+            const obj = CS.Object(
                 {
                     a: CS.String(true),
-                    b: CS.String(true),
+                    b: CS.Number(true),
                 },
                 true,
-            ),
-            CS.Object(
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({ a: 'abcd', b: 2 });
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with object schema and optional', () => {
+            const obj = CS.Object(
                 {
                     a: CS.String(true),
-                    b: CS.String(true),
+                    b: CS.String(false),
                 },
                 true,
-            ),
-            true,
-        ),
-    ).toThrowError('Merging of duplicate properties "a", "b" is not allowed');
-});
+            );
+            type objType = typeof obj.type;
 
-it('works with array schema', () => {
-    const arr = CS.Array(CS.String(true), true);
-    type arrType = typeof arr.type;
+            checkType<objType>({
+                a: 'b',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
 
-    checkType<arrType>(['abcd', 'efgh']);
-    expect(arr.getJsonSchema()).toEqual({
-        type: 'array',
-        items: {
-            type: 'string',
-            transform: ['trim'],
-        },
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with object schema with all optional', () => {
+            const obj = CS.Object(
+                {
+                    a: CS.String(false),
+                    b: CS.String(false),
+                },
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: undefined,
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with object schema and options', () => {
+            const obj = CS.Object(
+                {
+                    a: CS.String(true),
+                    b: CS.String(false),
+                },
+                true,
+                { description: 'object', additionalProperties: true },
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'b',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+                anotherProp: 42,
+            });
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with object schema and nullable option', () => {
+            const obj = CS.Object(
+                {
+                    a: CS.String(true),
+                    b: CS.String(false),
+                },
+                true,
+                { nullable: true },
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'b',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<objType>(null);
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
     });
-});
 
-it('works with array schema and opts', () => {
-    const arr = CS.Array(CS.String(true), true, {
-        uniqueItems: true,
-        minItems: 1,
+    describe('MergeObjects', () => {
+        it('works with mergeobjects schema', () => {
+            const obj = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(true),
+                    },
+                    true,
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                ),
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'a',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with mergeobjects schema and no required fields', () => {
+            const obj = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(false),
+                    },
+                    true,
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                ),
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: undefined,
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('rejects mergeobjects with duplicate keys', () => {
+            expect(() =>
+                CS.MergeObjects(
+                    CS.Object(
+                        {
+                            a: CS.String(true),
+                            b: CS.String(true),
+                        },
+                        true,
+                    ),
+                    CS.Object(
+                        {
+                            a: CS.String(true),
+                            b: CS.String(true),
+                        },
+                        true,
+                    ),
+                    true,
+                ),
+            ).toThrowError(
+                'Merging of duplicate properties "a", "b" is not allowed',
+            );
+        });
+
+        it('works with mergeobjects schema and nullable option', () => {
+            const obj = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(true),
+                    },
+                    true,
+                    { nullable: true },
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                    { nullable: false },
+                ),
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: 'a',
+                b: undefined,
+            });
+            checkType<objType>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<objType>(null);
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+
+            const obj2 = CS.MergeObjects(
+                CS.Object(
+                    {
+                        a: CS.String(true),
+                    },
+                    true,
+                    { nullable: false },
+                ),
+                CS.Object(
+                    {
+                        b: CS.String(false),
+                    },
+                    true,
+                    { nullable: true },
+                ),
+                true,
+            );
+            type obj2Type = typeof obj2.type;
+
+            checkType<obj2Type>({
+                a: 'a',
+                b: undefined,
+            });
+            checkType<obj2Type>({
+                a: 'b',
+                b: 'b',
+            });
+            checkType<obj2Type>(null);
+
+            expect(obj2.getJsonSchema()).toMatchSnapshot();
+        });
     });
-    type arrType = typeof arr.type;
 
-    checkType<arrType>(['abcd', 'abcd']);
-    expect(arr.getJsonSchema()).toEqual({
-        type: 'array',
-        items: {
-            type: 'string',
-            transform: ['trim'],
-        },
-        uniqueItems: true,
-        minItems: 1,
+    describe('Array()', () => {
+        it('works with array schema', () => {
+            const arr = CS.Array(CS.String(true), true);
+            type arrType = typeof arr.type;
+
+            checkType<arrType>(['abcd', 'efgh']);
+            expect(arr.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with array schema and opts', () => {
+            const arr = CS.Array(CS.String(true), true, {
+                uniqueItems: true,
+                minItems: 1,
+            });
+            type arrType = typeof arr.type;
+
+            checkType<arrType>(['abcd', 'abcd']);
+            expect(arr.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with array schema and nullable option', () => {
+            const arr = CS.Array(CS.String(true), true, { nullable: true });
+            type arrType = typeof arr.type;
+
+            checkType<arrType>(['abcd', 'abcd']);
+            checkType<arrType>(null);
+            expect(arr.getJsonSchema()).toMatchSnapshot();
+        });
     });
-});
 
-it('works with enum schema', () => {
-    const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true);
-    const csTuple = CS.Enum(['a', 'b'] as ['a', 'b'], true);
-    const csRo = CS.Enum(['a', 'b'] as const, true);
-    type csType = typeof cs.type;
+    describe('Enum()', () => {
+        it('works with enum schema', () => {
+            const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true);
+            const csTuple = CS.Enum(['a', 'b'] as ['a', 'b'], true);
+            const csRo = CS.Enum(['a', 'b'] as const, true);
+            type csType = typeof cs.type;
 
-    checkType<csType>('a');
-    checkType<csType>('b');
+            checkType<csType>('a');
+            checkType<csType>('b');
 
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'string',
-        enum: ['a', 'b'],
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('works with enum schema and nullable option', () => {
+            const cs = CS.Enum(['a' as 'a', 'b' as 'b'], true, {
+                nullable: true,
+            });
+            const csTuple = CS.Enum(['a', 'b'] as ['a', 'b'], true);
+            const csRo = CS.Enum(['a', 'b'] as const, true);
+            type csType = typeof cs.type;
+
+            checkType<csType>('a');
+            checkType<csType>('b');
+            checkType<csType>(null);
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
-});
 
-it('generates an anyOf schema', () => {
-    const cs = CS.Object(
-        {
-            foo: CS.AnyOf([CS.String(true), CS.Boolean(true)], true),
-        },
-        true,
-    );
-    type csType = typeof cs.type;
+    describe('AnyOf()', () => {
+        it('generates an anyOf schema', () => {
+            const cs = CS.Object(
+                {
+                    foo: CS.AnyOf([CS.String(true), CS.Boolean(true)], true),
+                },
+                true,
+            );
+            type csType = typeof cs.type;
 
-    checkType<csType>({ foo: 'foo' });
-    checkType<csType>({ foo: true });
+            checkType<csType>({ foo: 'foo' });
+            checkType<csType>({ foo: true });
 
-    expect(cs.getJsonSchema()).toEqual({
-        type: 'object',
-        required: ['foo'],
-        additionalProperties: false,
-        properties: {
-            foo: {
-                anyOf: [
-                    { type: 'string', transform: ['trim'] },
-                    { type: 'boolean' },
-                ],
-            },
-        },
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
     });
-});
 
-it('works with const schema', () => {
-    const cs = CS.Const(42 as const, true);
-    type csType = typeof cs.type;
+    describe('Const()', () => {
+        it('works with const schema', () => {
+            const cs = CS.Const(42 as const, true);
+            type csType = typeof cs.type;
 
-    checkType<csType>(42);
+            checkType<csType>(42);
 
-    expect(cs.getJsonSchema()).toEqual({ const: 42 });
-});
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
 
-it('works with null schema', () => {
-    const cs = CS.Null(true);
-    type csType = typeof cs.type;
+        it('works with const schema and nullable option', () => {
+            const cs = CS.Const(42 as const, true, { nullable: true });
+            type csType = typeof cs.type;
 
-    checkType<csType>(null);
+            checkType<csType>(42);
+            checkType<csType>(null);
 
-    expect(cs.getJsonSchema()).toEqual({ type: 'null' });
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+    });
+
+    describe('Null()', () => {
+        it('works with null schema', () => {
+            const cs = CS.Null(true);
+            type csType = typeof cs.type;
+
+            checkType<csType>(null);
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+    });
 });
