@@ -40,7 +40,14 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
-type Nullable<T, O extends Options> = O['nullable'] extends true ? T | null : T;
+// Used to work around a bug in typescript where unprovided options are considered "any"
+type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
+
+type Nullable<T, O extends Options> = IfAny<
+    O,
+    T,
+    O['nullable'] extends true ? T | null : T
+>;
 
 type NullableMerge<A, B> = A extends null
     ? (A & B) | null
@@ -132,13 +139,11 @@ type AllowAdditionalProperties<
     O extends ObjectOptions
 > = O['additionalProperties'] extends true ? T & { [k: string]: unknown } : T;
 
-function _Object<
-    P extends Props,
-    R extends boolean,
-    O extends ObjectOptions,
-    REQ extends GetRequiredKeys<P>,
-    OPT extends GetOptionalKeys<P>
->(props: P, required: R, opts?: O) {
+function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
+    props: P,
+    required: R,
+    opts?: O,
+) {
     return {
         getJsonSchema: () => {
             const propsRequired = _.map(props, (v, k) =>
@@ -159,7 +164,8 @@ function _Object<
         },
         type: (undefined as unknown) as Nullable<
             AllowAdditionalProperties<
-                { [k in REQ]: P[k]['type'] } & { [k in OPT]?: P[k]['type'] },
+                { [k in GetRequiredKeys<P>]: P[k]['type'] } &
+                    { [k in GetOptionalKeys<P>]?: P[k]['type'] },
                 O
             >,
             O

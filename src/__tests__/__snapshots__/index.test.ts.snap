@@ -311,6 +311,27 @@ Object {
 }
 `;
 
+exports[`typed-ajv Object() works with object schema and nested array 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "items": Object {
+        "transform": Array [
+          "trim",
+        ],
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv Object() works with object schema and nullable option 1`] = `
 Object {
   "additionalProperties": false,
