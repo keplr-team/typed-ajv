@@ -250,6 +250,22 @@ describe('typed-ajv', () => {
 
             expect(obj.getJsonSchema()).toMatchSnapshot();
         });
+
+        it('works with object schema and nested array', () => {
+            const obj = CS.Object(
+                {
+                    a: CS.Array(CS.String(true), true),
+                },
+                true,
+            );
+            type objType = typeof obj.type;
+
+            checkType<objType>({
+                a: ['a'],
+            });
+
+            expect(obj.getJsonSchema()).toMatchSnapshot();
+        });
     });
 
     describe('MergeObjects', () => {

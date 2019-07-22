@@ -58,6 +58,14 @@ expectError<{ p2: number }>(CS.Object({ p1: CS.Number(true) }, true).type);
 expectType<{ p1: number } & { p2?: boolean }>(
     CS.Object({ p1: CS.Number(true), p2: CS.Boolean(false) }, true).type,
 );
+expectType<{ a: string[] }>(
+    CS.Object(
+        {
+            a: CS.Array(CS.String(true), true),
+        },
+        true,
+    ).type,
+);
 
 // MergeObject
 
