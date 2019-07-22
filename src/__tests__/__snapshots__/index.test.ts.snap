@@ -33,6 +33,32 @@ Object {
 }
 `;
 
+exports[`typed-ajv AnyOf() generates an anyOf schema with nullable option 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "foo": Object {
+      "anyOf": Array [
+        Object {
+          "transform": Array [
+            "trim",
+          ],
+          "type": "string",
+        },
+        Object {
+          "type": "boolean",
+        },
+      ],
+      "nullable": true,
+    },
+  },
+  "required": Array [
+    "foo",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv Array() works with array schema 1`] = `
 Object {
   "items": Object {

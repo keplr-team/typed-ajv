@@ -7,7 +7,8 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc",
-        "test": "jest"
+        "test": "jest",
+        "test-types": "tsd"
     },
     "husky": {
         "hooks": {
@@ -24,6 +25,9 @@
             "git add"
         ]
     },
+    "tsd": {
+        "directory": "src/__tests__"
+    },
     "devDependencies": {
         "@types/jest": "^24.0.15",
         "@types/lodash": "^4.14.136",
@@ -37,6 +41,7 @@
         "lint-staged": "^9.2.0",
         "prettier": "1.18.2",
         "ts-jest": "^24.0.2",
+        "tsd": "^0.7.4",
         "typescript": "^3.5.3"
     },
     "dependencies": {

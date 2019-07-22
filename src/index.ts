@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 import {
-    StringOptions,
-    NumericOptions,
     ArrayOptions,
-    Options,
-    ObjectOptions,
     BooleanOptions,
+    NumericOptions,
+    ObjectOptions,
+    Options,
+    StringOptions,
 } from './json-schema-declarations';
 
 /**
@@ -119,20 +119,26 @@ function _Null() {
  * type T
  */
 type GetRequiredKeys<T> = ({
-    [P in keyof T]: T[P] extends { isRequired: true } ? P : never
+    [P in keyof T]: T[P] extends { isRequired: true } ? P : never;
 })[keyof T];
 type GetOptionalKeys<T> = ({
-    [P in keyof T]: T[P] extends { isRequired: false } ? P : never
+    [P in keyof T]: T[P] extends { isRequired: false } ? P : never;
 })[keyof T];
 interface Props {
     [key: string]: CommonSchema<any>;
 }
+type AllowAdditionalProperties<
+    T,
+    O extends ObjectOptions
+> = O['additionalProperties'] extends true ? T & { [k: string]: unknown } : T;
 
-function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
-    props: P,
-    required: R,
-    opts?: O,
-) {
+function _Object<
+    P extends Props,
+    R extends boolean,
+    O extends ObjectOptions,
+    REQ extends GetRequiredKeys<P>,
+    OPT extends GetOptionalKeys<P>
+>(props: P, required: R, opts?: O) {
     return {
         getJsonSchema: () => {
             const propsRequired = _.map(props, (v, k) =>
@@ -152,11 +158,10 @@ function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
                 : ret;
         },
         type: (undefined as unknown) as Nullable<
-            { [k in GetRequiredKeys<P>]: P[k]['type'] } &
-                { [k in GetOptionalKeys<P>]?: P[k]['type'] } &
-                (O['additionalProperties'] extends true
-                    ? { [k: string]: unknown }
-                    : {}),
+            AllowAdditionalProperties<
+                { [k in REQ]: P[k]['type'] } & { [k in OPT]?: P[k]['type'] },
+                O
+            >,
             O
         >,
         isRequired: (required as unknown) as R extends true ? true : false,
@@ -242,11 +247,11 @@ function _Enum<
     };
 }
 
-function _AnyOf<T extends CommonSchema<unknown>[], R extends boolean>(
-    schemas: T,
-    required: R,
-    opts?: Options,
-) {
+function _AnyOf<
+    T extends CommonSchema<unknown>[],
+    R extends boolean,
+    O extends Options
+>(schemas: T, required: R, opts?: O) {
     return {
         getJsonSchema() {
             return {
@@ -254,7 +259,7 @@ function _AnyOf<T extends CommonSchema<unknown>[], R extends boolean>(
                 ...opts,
             };
         },
-        type: (undefined as unknown) as T[number]['type'],
+        type: (undefined as unknown) as Nullable<T[number]['type'], O>,
         isRequired: (required as unknown) as R extends true ? true : false,
     };
 }
@@ -269,11 +274,13 @@ function addRequiredArg<
     Ret extends CommonSchemaWithoutIsRequired<any>,
     CSOptions extends Options
 >(csFunc: (opts?: CSOptions) => Ret) {
-    function withRequired<T extends boolean>(required: T, opts?: CSOptions) {
-        const ret = csFunc(opts);
+    function withRequired<T extends boolean, O extends CSOptions>(
+        required: T,
+        opts?: O,
+    ) {
         return {
-            ...ret,
-            type: undefined as Nullable<typeof ret.type, CSOptions>,
+            ...(csFunc(opts) as Omit<Ret, 'type'>), // We need to omit 'type' to override it
+            type: undefined as Nullable<Ret['type'], O>,
             isRequired: (required as unknown) as T extends true ? true : false,
         };
     }

@@ -1,4 +1,4 @@
-import { CS } from '.';
+import { CS } from '../index';
 
 const checkType = <A>(a: A) => a;
 
@@ -423,7 +423,9 @@ describe('typed-ajv', () => {
         });
 
         it('works with array schema and nullable option', () => {
-            const arr = CS.Array(CS.String(true), true, { nullable: true });
+            const arr = CS.Array(CS.String(true), true, {
+                nullable: true,
+            });
             type arrType = typeof arr.type;
 
             checkType<arrType>(['abcd', 'abcd']);
@@ -473,6 +475,24 @@ describe('typed-ajv', () => {
 
             checkType<csType>({ foo: 'foo' });
             checkType<csType>({ foo: true });
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+
+        it('generates an anyOf schema with nullable option', () => {
+            const cs = CS.Object(
+                {
+                    foo: CS.AnyOf([CS.String(true), CS.Boolean(true)], true, {
+                        nullable: true as const, // TypeScript seems lost on this case, we need to force the "as const"
+                    }),
+                },
+                true,
+            );
+            type csType = typeof cs.type;
+
+            checkType<csType>({ foo: 'foo' });
+            checkType<csType>({ foo: true });
+            checkType<csType>({ foo: null });
 
             expect(cs.getJsonSchema()).toMatchSnapshot();
         });

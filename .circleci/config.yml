@@ -18,8 +18,9 @@ jobs:
     - save_cache:
         paths: ~/.cache/yarn
         key: v4-dependencies-{{ checksum "yarn.lock" }}
-    - run: yarn test
     - run: yarn build
+    - run: yarn test-types
+    - run: yarn test
     - persist_to_workspace:
         root: .
         paths: '*'
