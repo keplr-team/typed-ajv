@@ -4946,17 +4946,16 @@ ts-jest@^24.0.2:
     semver "^5.5"
     yargs-parser "10.x"
 
-tsd@^0.7.4:
-  version "0.7.4"
-  resolved "https://registry.yarnpkg.com/tsd/-/tsd-0.7.4.tgz#d9aba567f1394641821a6800dcee60746c87bd03"
-  integrity sha512-cqr1s2GHtVkU3L/4BXDaeJOjFEuZ7iOVC+hwmyx4G7Eo26mSXCFNnwFm4EasK/MW2HdY3AQWux+AjYzDYLzZow==
+tsd@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/tsd/-/tsd-0.9.0.tgz#ac6ee5b1b6fa60dd56839009422a2b719304335d"
+  integrity sha512-imhcI0kHCe97hRT00demJgolGEFz7lxY2IKC/gRyBN409eKW184ZKN7SdjlqVGonWvNpb9HOBTAMBIbzeRcjcw==
   dependencies:
     eslint-formatter-pretty "^1.3.0"
     globby "^9.1.0"
     meow "^5.0.0"
     path-exists "^3.0.0"
     read-pkg-up "^4.0.0"
-    typescript "^3.0.1"
     update-notifier "^2.5.0"
 
 tslib@^1.8.1, tslib@^1.9.0:
@@ -4995,7 +4994,7 @@ type-fest@^0.4.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.4.1.tgz#8bdf77743385d8a4f13ba95f610f5ccd68c728f8"
   integrity sha512-IwzA/LSfD2vC1/YDYMv/zHP4rDF1usCwllsDpbolT3D4fUepIO7f9K70jjmUewU/LmGUKJcwcVtDCpnKk4BPMw==
 
-typescript@^3.0.1, typescript@^3.5.3:
+typescript@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
   integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
