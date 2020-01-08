@@ -11,4 +11,5 @@ module.exports = {
         },
     },
     testPathIgnorePatterns: ['\\.test-d\\.'],
+    testMatch: ['<rootDir>/src/**/*.test.ts'],
 };
