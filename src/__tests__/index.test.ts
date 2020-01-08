@@ -227,6 +227,14 @@ describe('typed-ajv', () => {
             expect(obj.getJsonSchema()).toMatchSnapshot();
         });
 
+        it('works with array schema and nullable option', () => {
+            const obj = CS.Array(CS.String(true), true, { nullable: true });
+            type objType = typeof obj.type;
+
+            checkType<objType>(['a']);
+            checkType<objType>(null);
+        });
+
         it('works with object schema and nullable option', () => {
             const obj = CS.Object(
                 {
