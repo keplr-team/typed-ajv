@@ -44,7 +44,7 @@ interface CommonSchemaWithoutIsRequired<T> {
 }
 
 // Used to work around a bug in typescript where unprovided options are considered "any"
-type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
+type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N;
 
 type Nullable<T, O extends Options<any>> = IfAny<
     O,
@@ -54,7 +54,9 @@ type Nullable<T, O extends Options<any>> = IfAny<
 
 type NullableMerge<A, B> = A extends null
     ? (A & B) | null
-    : (B extends null ? (A & B) | null : A & B);
+    : B extends null
+    ? (A & B) | null
+    : A & B;
 
 function _String(opts?: StringOptions) {
     return {
@@ -114,7 +116,11 @@ function _Const<V, R extends boolean, O extends ConstOptions<V>>(
             return { const: value, ...opts };
         },
         type: value as Nullable<typeof value, O>,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : O extends { default: any }
+            ? true
+            : false,
     };
 }
 
@@ -128,12 +134,12 @@ function _Null(opts?: Options<null>) {
 /** The two following types return a subtype that represent the required/optional keys of
  * type T
  */
-type GetRequiredKeys<T> = ({
+type GetRequiredKeys<T> = {
     [P in keyof T]: T[P] extends { isRequired: true } ? P : never;
-})[keyof T];
-type GetOptionalKeys<T> = ({
+}[keyof T];
+type GetOptionalKeys<T> = {
     [P in keyof T]: T[P] extends { isRequired: false } ? P : never;
-})[keyof T];
+}[keyof T];
 interface Props {
     [key: string]: CommonSchema<any>;
 }
@@ -173,7 +179,11 @@ function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
             >,
             O
         >,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : O extends { default: any }
+            ? true
+            : false,
     };
 }
 
@@ -191,7 +201,11 @@ function _Array<
             };
         },
         type: (undefined as unknown) as Nullable<P['type'][], O>,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : O extends { default: any }
+            ? true
+            : false,
     };
 }
 
@@ -231,7 +245,13 @@ function _MergeObjects<
             };
         },
         type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : A['isRequired'] extends true
+            ? true
+            : B['isRequired'] extends true
+            ? true
+            : false,
     };
 }
 
@@ -255,7 +275,11 @@ function _Enum<
             };
         },
         type: (undefined as unknown) as Nullable<T[number], O>,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : O extends { default: any }
+            ? true
+            : false,
     };
 }
 
@@ -272,7 +296,11 @@ function _AnyOf<
             };
         },
         type: (undefined as unknown) as Nullable<T[number]['type'], O>,
-        isRequired: (required as unknown) as R extends true ? true : false,
+        isRequired: (required as unknown) as R extends true
+            ? true
+            : O extends { default: any }
+            ? true
+            : false,
     };
 }
 
@@ -293,7 +321,11 @@ function addRequiredArg<
         return {
             ...(csFunc(opts) as Omit<Ret, 'type'>), // We need to omit 'type' to override it
             type: undefined as Nullable<Ret['type'], O>,
-            isRequired: (required as unknown) as T extends true ? true : false,
+            isRequired: (required as unknown) as T extends true
+                ? true
+                : O extends { default: any }
+                ? true
+                : false,
         };
     }
     return withRequired;
