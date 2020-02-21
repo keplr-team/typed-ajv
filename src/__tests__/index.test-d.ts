@@ -8,6 +8,7 @@ expectType<any>(CS.Any(true).type);
 // Boolean
 
 expectType<boolean>(CS.Boolean(true).type);
+expectType<boolean>(CS.Boolean(false).type);
 expectError<number>(CS.Boolean(true).type);
 
 // Const
@@ -53,6 +54,11 @@ expectError<string[]>(CS.Array(CS.Boolean(true), true).type);
 // Object
 
 expectType<{ p1: number }>(CS.Object({ p1: CS.Number(true) }, true).type);
+expectType<{ p1: number }>(
+    CS.Object({ p1: CS.Number(false, { default: 0 }) }, true).type,
+);
+expectType<{ p1?: number }>(CS.Object({ p1: CS.Number(false) }, true).type);
+expectError<{ p1: number }>(CS.Object({ p1: CS.Number(false) }, true).type);
 expectError<{ p1: boolean }>(CS.Object({ p1: CS.Number(true) }, true).type);
 expectError<{ p2: number }>(CS.Object({ p1: CS.Number(true) }, true).type);
 expectType<{ p1: number } & { p2?: boolean }>(
@@ -72,6 +78,20 @@ expectType<{ a: string[] }>(
 expectType<{ p1: number } & { p2?: boolean }>(
     CS.MergeObjects(
         CS.Object({ p1: CS.Number(true) }, true),
+        CS.Object({ p2: CS.Boolean(false) }, true),
+        true,
+    ).type,
+);
+expectType<{ p1: number } & { p2?: boolean }>(
+    CS.MergeObjects(
+        CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
+        CS.Object({ p2: CS.Boolean(false) }, true),
+        true,
+    ).type,
+);
+expectError<{ p1: number } & { p2?: boolean }>(
+    CS.MergeObjects(
+        CS.Object({ p1: CS.Number(false) }, true),
         CS.Object({ p2: CS.Boolean(false) }, true),
         true,
     ).type,
