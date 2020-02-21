@@ -41,7 +41,7 @@
         "prettier": "1.19.1",
         "ts-jest": "^25.2.1",
         "tsd": "^0.9.0",
-        "typescript": "^3.7.5"
+        "typescript": "^3.8.2"
     },
     "dependencies": {
         "lodash": "^4.17.15"
