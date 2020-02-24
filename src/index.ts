@@ -43,14 +43,9 @@ interface CommonSchemaWithoutIsRequired<T> {
     getJsonSchema: () => any;
 }
 
-// Used to work around a bug in typescript where unprovided options are considered "any"
-type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N;
-
-type Nullable<T, O extends Options<any>> = IfAny<
-    O,
-    T,
-    O['nullable'] extends true ? T | null : T
->;
+type Nullable<T, O extends [Options<any>] | []> = O extends [{ nullable: true }]
+    ? T | null
+    : T;
 
 type NullableMerge<A, B> = A extends null
     ? (A & B) | null
@@ -58,75 +53,91 @@ type NullableMerge<A, B> = A extends null
     ? (A & B) | null
     : A & B;
 
-function _String(opts?: StringOptions) {
+type HasDefault<T extends [Options<any>] | []> = T extends [
+    { default: unknown },
+]
+    ? true
+    : false;
+
+function _String(...opts: [StringOptions] | []) {
     return {
         getJsonSchema: () => ({
             type: 'string' as 'string',
             transform: ['trim'],
-            ...opts,
+            ...(opts.length && opts[0]),
         }),
         type: 'abcd' as string,
     };
 }
 
-function _Number(opts?: NumericOptions) {
+function _Number(...opts: [NumericOptions] | []) {
     return {
-        getJsonSchema: () => ({ type: 'number' as 'number', ...opts }),
+        getJsonSchema: () => ({
+            type: 'number' as 'number',
+            ...(opts.length && opts[0]),
+        }),
         type: 1234 as number,
     };
 }
 
-function _Integer(opts?: NumericOptions) {
+function _Integer(...opts: [NumericOptions] | []) {
     return {
-        getJsonSchema: () => ({ type: 'integer' as 'integer', ...opts }),
+        getJsonSchema: () => ({
+            type: 'integer' as 'integer',
+            ...(opts.length && opts[0]),
+        }),
         type: 2 as number,
     };
 }
 
-function _Boolean(opts?: BooleanOptions) {
+function _Boolean(...opts: [BooleanOptions] | []) {
     return {
-        getJsonSchema: () => ({ type: 'boolean' as 'boolean', ...opts }),
+        getJsonSchema: () => ({
+            type: 'boolean' as 'boolean',
+            ...(opts.length && opts[0]),
+        }),
         type: true as boolean,
     };
 }
 
-function _Any(opts?: Options<any>) {
+function _Any(...opts: [Options<any>] | []) {
     return {
-        getJsonSchema: () => ({ ...opts }),
+        getJsonSchema: () => ({ ...(opts.length && opts[0]) }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: 'abcd' as any,
     };
 }
 
-function _Unknown(opts?: Options<unknown>) {
+function _Unknown(...opts: [Options<unknown>] | []) {
     return {
-        getJsonSchema: () => ({ ...opts }),
+        getJsonSchema: () => ({ ...(opts.length && opts[0]) }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         type: 'abcd' as unknown,
     };
 }
 
-function _Const<V, R extends boolean, O extends ConstOptions<V>>(
+function _Const<V, R extends boolean, O extends [ConstOptions<V>] | []>(
     value: V,
     required: R,
-    opts?: O,
+    ...opts: O
 ) {
     return {
         getJsonSchema() {
-            return { const: value, ...opts };
+            return { const: value, ...(opts.length && opts[0]) };
         },
         type: value as Nullable<typeof value, O>,
         isRequired: (required as unknown) as R extends true
             ? true
-            : O extends { default: any }
-            ? true
-            : false,
+            : HasDefault<O>,
     };
 }
 
-function _Null(opts?: Options<null>) {
+function _Null(...opts: [Options<null>] | []) {
     return {
-        getJsonSchema: () => ({ type: 'null' as 'null', ...opts }),
+        getJsonSchema: () => ({
+            type: 'null' as 'null',
+            ...(opts.length && opts[0]),
+        }),
         type: null,
     };
 }
@@ -143,16 +154,17 @@ type GetOptionalKeys<T> = {
 interface Props {
     [key: string]: CommonSchema<any>;
 }
-type AllowAdditionalProperties<
-    T,
-    O extends ObjectOptions
-> = O['additionalProperties'] extends true ? T & { [k: string]: unknown } : T;
+type AllowAdditionalProperties<T, O extends [ObjectOptions] | []> = O extends [
+    { additionalProperties: true },
+]
+    ? T & { [k: string]: unknown }
+    : T;
 
-function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
-    props: P,
-    required: R,
-    opts?: O,
-) {
+function _Object<
+    P extends Props,
+    R extends boolean,
+    O extends [ObjectOptions] | []
+>(props: P, required: R, ...opts: O) {
     return {
         getJsonSchema: () => {
             const propsRequired = _.map(props, (v, k) =>
@@ -165,7 +177,7 @@ function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
                     v.getJsonSchema(),
                 ) as Record<string, any>,
                 additionalProperties: false,
-                ...opts,
+                ...(opts.length && opts[0]),
             };
             return propsRequired.length > 0
                 ? { ...ret, required: propsRequired }
@@ -181,31 +193,27 @@ function _Object<P extends Props, R extends boolean, O extends ObjectOptions>(
         >,
         isRequired: (required as unknown) as R extends true
             ? true
-            : O extends { default: any }
-            ? true
-            : false,
+            : HasDefault<O>,
     };
 }
 
 function _Array<
     P extends CommonSchema<any>,
     R extends boolean,
-    O extends ArrayOptions
->(type: P, required: R, opts?: O) {
+    O extends [ArrayOptions] | []
+>(type: P, required: R, ...opts: O) {
     return {
         getJsonSchema: () => {
             return {
                 type: 'array',
                 items: type.getJsonSchema(),
-                ...opts,
+                ...(opts.length && opts[0]),
             };
         },
         type: (undefined as unknown) as Nullable<P['type'][], O>,
         isRequired: (required as unknown) as R extends true
             ? true
-            : O extends { default: any }
-            ? true
-            : false,
+            : HasDefault<O>,
     };
 }
 
@@ -264,43 +272,39 @@ function _MergeObjects<
 function _Enum<
     T extends readonly string[],
     R extends boolean,
-    O extends EnumOptions<T>
->(els: T, required: R, opts?: O) {
+    O extends [EnumOptions<T>] | []
+>(els: T, required: R, ...opts: O) {
     return {
         getJsonSchema: () => {
             return {
                 type: 'string',
                 enum: els,
-                ...opts,
+                ...(opts.length && opts[0]),
             };
         },
         type: (undefined as unknown) as Nullable<T[number], O>,
         isRequired: (required as unknown) as R extends true
             ? true
-            : O extends { default: any }
-            ? true
-            : false,
+            : HasDefault<O>,
     };
 }
 
 function _AnyOf<
     T extends CommonSchema<unknown>[],
     R extends boolean,
-    O extends AnyOfOptions<Nullable<T[number]['type'], O>>
->(schemas: T, required: R, opts?: O) {
+    O extends [AnyOfOptions<Nullable<T[number]['type'], O>>] | []
+>(schemas: T, required: R, ...opts: O) {
     return {
         getJsonSchema() {
             return {
                 anyOf: schemas.map(s => s.getJsonSchema()),
-                ...opts,
+                ...(opts.length && opts[0]),
             };
         },
         type: (undefined as unknown) as Nullable<T[number]['type'], O>,
         isRequired: (required as unknown) as R extends true
             ? true
-            : O extends { default: any }
-            ? true
-            : false,
+            : HasDefault<O>,
     };
 }
 
@@ -312,20 +316,18 @@ function _AnyOf<
  */
 function addRequiredArg<
     Ret extends CommonSchemaWithoutIsRequired<any>,
-    CSOptions extends Options<Ret['type']>
->(csFunc: (opts?: CSOptions) => Ret) {
+    CSOptions extends [Options<Ret['type']>] | []
+>(csFunc: (...opts: CSOptions) => Ret) {
     function withRequired<T extends boolean, O extends CSOptions>(
         required: T,
-        opts?: O,
+        ...opts: O
     ) {
         return {
-            ...(csFunc(opts) as Omit<Ret, 'type'>), // We need to omit 'type' to override it
+            ...(csFunc(...opts) as Omit<Ret, 'type'>), // We need to omit 'type' to override it
             type: undefined as Nullable<Ret['type'], O>,
             isRequired: (required as unknown) as T extends true
                 ? true
-                : O extends { default: any }
-                ? true
-                : false,
+                : HasDefault<O>,
         };
     }
     return withRequired;
