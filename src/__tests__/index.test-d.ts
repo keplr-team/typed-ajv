@@ -185,3 +185,13 @@ expectType<false>(
 expectNotAssignable<number | string>(
     CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
 );
+
+// Required
+
+expectType<string>(CS.Required(CS.String(false)).type);
+expectType<true>(CS.Required(CS.String(false)).isRequired);
+
+// Optional
+
+expectType<string>(CS.Optional(CS.String(true)).type);
+expectType<false>(CS.Optional(CS.String(true)).isRequired);

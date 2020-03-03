@@ -308,6 +308,21 @@ function _AnyOf<
     };
 }
 
+function _Required<S extends CommonSchema<any>>(schema: S) {
+    return {
+        ...(schema as Omit<S, 'type' | 'isRequired'>),
+        type: undefined as Exclude<S['type'], undefined>,
+        isRequired: true as const,
+    };
+}
+
+function _Optional<S extends CommonSchema<any>>(schema: S) {
+    return {
+        ...(schema as Omit<S, 'isRequired'>),
+        isRequired: false as const,
+    };
+}
+
 /** returns a CS function that takes the arguments of csFunc and a "required" argument as
  * the last argument.
  *
@@ -366,4 +381,10 @@ export const CS = {
      * Note: required attribute of schemas is not used, only the one for AnyOf.
      */
     AnyOf: _AnyOf,
+
+    /**
+     * Helpers
+     */
+    Required: _Required,
+    Optional: _Optional,
 };

@@ -427,6 +427,39 @@ Object {
 }
 `;
 
+exports[`typed-ajv Optional() works within an object schema 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Required() works within an object schema 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "a",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv String() works with string schema 1`] = `
 Object {
   "transform": Array [
