@@ -253,13 +253,7 @@ function _MergeObjects<
             };
         },
         type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
-        isRequired: (required as unknown) as R extends true
-            ? true
-            : A['isRequired'] extends true
-            ? true
-            : B['isRequired'] extends true
-            ? true
-            : false,
+        isRequired: (required as unknown) as R,
     };
 }
 

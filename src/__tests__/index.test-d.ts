@@ -135,6 +135,30 @@ expectAssignable<{ p1: number } & { p2?: boolean }>(
         true,
     ).type,
 );
+expectAssignable<{ foo: { p1: number; p2?: boolean } }>(
+    CS.Object(
+        {
+            foo: CS.MergeObjects(
+                CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
+                CS.Object({ p2: CS.Boolean(false) }, true),
+                true,
+            ),
+        },
+        true,
+    ).type,
+);
+expectAssignable<{ foo?: { p1: number; p2?: boolean } }>(
+    CS.Object(
+        {
+            foo: CS.MergeObjects(
+                CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
+                CS.Object({ p2: CS.Boolean(false) }, true),
+                false,
+            ),
+        },
+        true,
+    ).type,
+);
 expectType<true>(
     CS.MergeObjects(
         CS.Object({ p1: CS.Number(true) }, true),
@@ -153,6 +177,13 @@ expectType<false>(
     CS.MergeObjects(
         CS.Object({ p1: CS.Number(true) }, false),
         CS.Object({ p2: CS.Boolean(false) }, false),
+        false,
+    ).isRequired,
+);
+expectType<false>(
+    CS.MergeObjects(
+        CS.Object({ p1: CS.Number(true) }, true),
+        CS.Object({ p2: CS.Boolean(false) }, true),
         false,
     ).isRequired,
 );
