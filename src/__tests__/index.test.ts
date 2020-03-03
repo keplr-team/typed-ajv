@@ -554,6 +554,30 @@ describe('typed-ajv', () => {
         });
     });
 
+    describe('Required()', () => {
+        it('works within an object schema', () => {
+            const cs = CS.Object({ a: CS.Required(CS.String(false)) }, true);
+            type csType = typeof cs.type;
+
+            checkType<csType>({ a: 'abcd' });
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+    });
+
+    describe('Optional()', () => {
+        it('works within an object schema', () => {
+            const cs = CS.Object({ a: CS.Optional(CS.String(true)) }, true);
+            type csType = typeof cs.type;
+
+            checkType<csType>({ a: 'abcd' });
+            checkType<csType>({ a: undefined });
+            checkType<csType>({});
+
+            expect(cs.getJsonSchema()).toMatchSnapshot();
+        });
+    });
+
     it('sets defaults', () => {
         expect(
             CS.Any(true, { default: true }).getJsonSchema(),

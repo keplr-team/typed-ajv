@@ -55,3 +55,10 @@ if (ajv.validate(jsonSchema, inputData)) {
 | Enum         | A string with enumerated values                                            |
 | Object       | An object with typed properties                                            |
 | MergeObjects | Merge two object definitions into one object containing all the properties |
+
+## Helpers
+
+| Type     | Description                                   | Example                                           |
+| -------- | --------------------------------------------- | ------------------------------------------------- |
+| Required | Changes the type of the schema to be required | CS.Required(CS.String(false)) === CS.String(true) |
+| Optional | Changes the type of the schema to be optional | CS.Optional(CS.String(true)) === CS.String(false) |
