@@ -2,6 +2,7 @@ module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
     collectCoverage: true,
+    coverageReporters: ['json', 'html'],
     coverageThreshold: {
         global: {
             branches: 100,

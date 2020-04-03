@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-call */
+
 import { expectAssignable, expectNotAssignable, expectType } from 'tsd';
+
 import { CS } from '../index';
 
 // Any
@@ -29,16 +32,16 @@ expectType<true>(CS.Enum(['A', 'B', 'C'] as const, true).isRequired);
 expectType<false>(CS.Enum(['A', 'B', 'C'] as const, false).isRequired);
 expectNotAssignable<'A' | 'B'>(CS.Enum(['A', 'B', 'C'] as const, true).type);
 expectAssignable<{ foo: 'A' | 'B' | 'C' }>(
-    CS.Object({ foo: CS.Enum(['A', 'B', 'C'] as const, true) }, true).type,
+  CS.Object({ foo: CS.Enum(['A', 'B', 'C'] as const, true) }, true).type,
 );
 expectAssignable<{ foo?: 'A' | 'B' | 'C' }>(
-    CS.Object({ foo: CS.Enum(['A', 'B', 'C'] as const, false) }, true).type,
+  CS.Object({ foo: CS.Enum(['A', 'B', 'C'] as const, false) }, true).type,
 );
 expectAssignable<{ foo: 'A' | 'B' | 'C' }>(
-    CS.Object(
-        { foo: CS.Enum(['A', 'B', 'C'] as const, false, { default: 'B' }) },
-        true,
-    ).type,
+  CS.Object(
+    { foo: CS.Enum(['A', 'B', 'C'] as const, false, { default: 'B' }) },
+    true,
+  ).type,
 );
 
 // Integer
@@ -87,134 +90,134 @@ expectAssignable<{ p1: number }>(CS.Object({ p1: CS.Number(true) }, true).type);
 expectType<true>(CS.Object({ p1: CS.Number(true) }, true).isRequired);
 expectType<false>(CS.Object({ p1: CS.Number(true) }, false).isRequired);
 expectAssignable<{ p1: number }>(
-    CS.Object({ p1: CS.Number(false, { default: 0 }) }, true).type,
+  CS.Object({ p1: CS.Number(false, { default: 0 }) }, true).type,
 );
 expectAssignable<{ p1?: number }>(
-    CS.Object({ p1: CS.Number(false) }, true).type,
+  CS.Object({ p1: CS.Number(false) }, true).type,
 );
 expectNotAssignable<{ p1: number }>(
-    CS.Object({ p1: CS.Number(false) }, true).type,
+  CS.Object({ p1: CS.Number(false) }, true).type,
 );
 expectNotAssignable<{ p1: boolean }>(
-    CS.Object({ p1: CS.Number(true) }, true).type,
+  CS.Object({ p1: CS.Number(true) }, true).type,
 );
 expectNotAssignable<{ p2: number }>(
-    CS.Object({ p1: CS.Number(true) }, true).type,
+  CS.Object({ p1: CS.Number(true) }, true).type,
 );
 expectAssignable<{ p1: number; p2?: boolean }>(
-    CS.Object({ p1: CS.Number(true), p2: CS.Boolean(false) }, true).type,
+  CS.Object({ p1: CS.Number(true), p2: CS.Boolean(false) }, true).type,
 );
 expectAssignable<{ p1: number; p2: boolean }>(
-    CS.Object(
-        { p1: CS.Number(true), p2: CS.Boolean(false, { default: false }) },
-        true,
-    ).type,
+  CS.Object(
+    { p1: CS.Number(true), p2: CS.Boolean(false, { default: false }) },
+    true,
+  ).type,
 );
 expectAssignable<{ a: string[] }>(
-    CS.Object(
-        {
-            a: CS.Array(CS.String(true), true),
-        },
-        true,
-    ).type,
+  CS.Object(
+    {
+      a: CS.Array(CS.String(true), true),
+    },
+    true,
+  ).type,
 );
 
 // MergeObject
 
 expectAssignable<{ p1: number } & { p2?: boolean }>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, true),
-        CS.Object({ p2: CS.Boolean(false) }, true),
-        true,
-    ).type,
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    true,
+  ).type,
 );
 expectAssignable<{ p1: number } & { p2?: boolean }>(
-    CS.MergeObjects(
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    true,
+  ).type,
+);
+expectAssignable<{ foo: { p1: number; p2?: boolean } }>(
+  CS.Object(
+    {
+      foo: CS.MergeObjects(
         CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
         CS.Object({ p2: CS.Boolean(false) }, true),
         true,
-    ).type,
-);
-expectAssignable<{ foo: { p1: number; p2?: boolean } }>(
-    CS.Object(
-        {
-            foo: CS.MergeObjects(
-                CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
-                CS.Object({ p2: CS.Boolean(false) }, true),
-                true,
-            ),
-        },
-        true,
-    ).type,
+      ),
+    },
+    true,
+  ).type,
 );
 expectAssignable<{ foo?: { p1: number; p2?: boolean } }>(
-    CS.Object(
-        {
-            foo: CS.MergeObjects(
-                CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
-                CS.Object({ p2: CS.Boolean(false) }, true),
-                false,
-            ),
-        },
-        true,
-    ).type,
-);
-expectType<true>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, true),
-        CS.Object({ p2: CS.Boolean(false) }, true),
-        true,
-    ).isRequired,
-);
-expectType<true>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, false),
-        CS.Object({ p2: CS.Boolean(false) }, false),
-        true,
-    ).isRequired,
-);
-expectType<false>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, false),
-        CS.Object({ p2: CS.Boolean(false) }, false),
-        false,
-    ).isRequired,
-);
-expectType<false>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, true),
+  CS.Object(
+    {
+      foo: CS.MergeObjects(
+        CS.Object({ p1: CS.Number(false, { default: 0 }) }, true),
         CS.Object({ p2: CS.Boolean(false) }, true),
         false,
-    ).isRequired,
+      ),
+    },
+    true,
+  ).type,
+);
+expectType<true>(
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    true,
+  ).isRequired,
+);
+expectType<true>(
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, false),
+    CS.Object({ p2: CS.Boolean(false) }, false),
+    true,
+  ).isRequired,
+);
+expectType<false>(
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, false),
+    CS.Object({ p2: CS.Boolean(false) }, false),
+    false,
+  ).isRequired,
+);
+expectType<false>(
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    false,
+  ).isRequired,
 );
 expectNotAssignable<{ p1: number } & { p2?: boolean }>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(false) }, true),
-        CS.Object({ p2: CS.Boolean(false) }, true),
-        true,
-    ).type,
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(false) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    true,
+  ).type,
 );
 expectNotAssignable<{ p1?: number } & { p2: boolean }>(
-    CS.MergeObjects(
-        CS.Object({ p1: CS.Number(true) }, true),
-        CS.Object({ p2: CS.Boolean(false) }, true),
-        true,
-    ).type,
+  CS.MergeObjects(
+    CS.Object({ p1: CS.Number(true) }, true),
+    CS.Object({ p2: CS.Boolean(false) }, true),
+    true,
+  ).type,
 );
 
 // AnyOf
 
 expectType<boolean | number>(
-    CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
+  CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
 );
 expectType<true>(
-    CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).isRequired,
+  CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).isRequired,
 );
 expectType<false>(
-    CS.AnyOf([CS.Boolean(true), CS.Number(true)], false).isRequired,
+  CS.AnyOf([CS.Boolean(true), CS.Number(true)], false).isRequired,
 );
 expectNotAssignable<number | string>(
-    CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
+  CS.AnyOf([CS.Boolean(true), CS.Number(true)], true).type,
 );
 
 // Required

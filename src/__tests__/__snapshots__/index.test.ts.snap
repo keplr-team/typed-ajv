@@ -262,6 +262,30 @@ Object {
 }
 `;
 
+exports[`typed-ajv MergeObjects works with mergeobjects schema with required in second object 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "a": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+    "b": Object {
+      "transform": Array [
+        "trim",
+      ],
+      "type": "string",
+    },
+  },
+  "required": Array [
+    "b",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv Null() works with null schema 1`] = `
 Object {
   "type": "null",
