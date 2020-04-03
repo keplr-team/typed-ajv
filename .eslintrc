@@ -1,0 +1,10 @@
+{
+  "root": true,
+  "parserOptions": { "project": "./tsconfig.json" },
+  "extends": ["@keplr/eslint-config-backend-node"],
+  "rules": {
+    "no-console": "off",
+    "no-process-env": "off",
+    "no-sync": "off"
+  }
+}
