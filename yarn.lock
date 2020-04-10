@@ -332,10 +332,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@keplr/eslint-config-backend-node@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@keplr/eslint-config-backend-node/-/eslint-config-backend-node-1.3.0.tgz#051d2568adc281776f8a7641c22aa129b39dac99"
-  integrity sha512-qjTmtWkEEamqJhO6ff+9Bdyqm/ghw3AArWhLQEXSBrSj3mxeLWAR0EXcCTfEunNqJ/AQFJry69FV1iSIevcxmQ==
+"@keplr/eslint-config-backend-node@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@keplr/eslint-config-backend-node/-/eslint-config-backend-node-1.3.2.tgz#d05a330a56c1afebce67db55c28ab9ce3ba957c1"
+  integrity sha512-2TvLI0OwTzE5sixT0i2CcXT5XAjpPjOWFHB81i3ibcn26+/UHefkoVaFLzgJnYIKEPRd31JZ+lzxSjJE/CUSuQ==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^2.27.0"
     "@typescript-eslint/parser" "^2.27.0"
