@@ -596,9 +596,11 @@ Object {
 
 exports[`typed-ajv sets defaults 10`] = `
 Object {
-  "a": "foo",
   "additionalProperties": false,
-  "b": "123",
+  "default": Object {
+    "a": "foo",
+    "b": "123",
+  },
   "properties": Object {
     "a": Object {
       "transform": Array [

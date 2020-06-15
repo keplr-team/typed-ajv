@@ -37,7 +37,7 @@ import {
 interface CommonSchema<T> {
   type: T;
   isRequired: boolean;
-  getJsonSchema: () => any;
+  getJsonSchema: () => unknown;
 }
 
 /** The return type of the _* functions which are then transformed to CS.* functions with addRequiredArg */
@@ -106,6 +106,7 @@ function _Boolean(...opts: [BooleanOptions] | []) {
 function _Any(...opts: [Options<any>] | []) {
   return {
     getJsonSchema: () => ({ ...opts[0] }),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     type: 'abcd' as any,
   };
 }
@@ -197,7 +198,7 @@ function _Object<
 }
 
 function _Array<
-  P extends CommonSchema<any>,
+  P extends CommonSchema<unknown>,
   R extends boolean,
   O extends [ArrayOptions] | []
 >(type: P, required: R, ...opts: O) {
@@ -212,10 +213,22 @@ function _Array<
   };
 }
 
+function getNullable(jsonSchema: {} | { nullable: boolean }) {
+  return 'nullable' in jsonSchema ? jsonSchema.nullable : undefined;
+}
+
+function getRequired(jsonSchema: {} | { required: string[] }) {
+  return 'required' in jsonSchema ? jsonSchema.required : [];
+}
+
+function getDefault(jsonSchema: {} | { default: object }) {
+  return 'default' in jsonSchema ? jsonSchema.default : undefined;
+}
+
 // TODO: more precise type to allow only objects as args
 function _MergeObjects<
-  A extends CommonSchema<any>,
-  B extends CommonSchema<any>,
+  A extends ReturnType<typeof _Object>,
+  B extends ReturnType<typeof _Object>,
   R extends boolean
 >(obj1: A, obj2: B, required: R) {
   const s1 = obj1.getJsonSchema();
@@ -236,16 +249,19 @@ function _MergeObjects<
 
   return {
     getJsonSchema: () => {
-      const nullable = s1.nullable || s2.nullable;
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      const nullable = getNullable(s1) || getNullable(s2);
+      const s1Default = getDefault(s1);
+      const s2Default = getDefault(s2);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return {
         type: 'object',
         properties: { ...s1.properties, ...s2.properties },
-        required: [...(s1.required ?? []), ...(s2.required ?? [])],
+        required: [...getRequired(s1), ...getRequired(s2)],
         additionalProperties: false,
         ...(typeof nullable === 'boolean' ? { nullable } : undefined),
-        ...(s1.default ?? s2.default
-          ? { ...s1.default, ...s2.default }
+        ...(s1Default ?? s2Default
+          ? { default: { ...s1Default, ...s2Default } }
           : undefined),
       };
     },
