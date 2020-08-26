@@ -3,7 +3,7 @@ version: 2.1
 executors:
   ci-node:
     docker:
-    - image: keplr/node-ci:12
+    - image: keplr/node-ci:13
 
 jobs:
   deps-n-test:
