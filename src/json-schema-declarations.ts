@@ -53,6 +53,7 @@ export interface NumericOptions extends Options<number> {
 /**
  * JSON Schema options for objects
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface ObjectOptions extends Options<object> {
   readonly additionalProperties?: boolean;
 }

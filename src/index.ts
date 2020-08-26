@@ -34,16 +34,16 @@ import {
  */
 
 /** The return type of the CS.* functions */
-interface CommonSchema<T> {
+interface CommonSchema<T, JC> {
   type: T;
   isRequired: boolean;
-  getJsonSchema: () => any;
+  getJsonSchema: () => JC;
 }
 
 /** The return type of the _* functions which are then transformed to CS.* functions with addRequiredArg */
-interface CommonSchemaWithoutIsRequired<T> {
+interface CommonSchemaWithoutIsRequired<T, JC> {
   type: T;
-  getJsonSchema: () => any;
+  getJsonSchema: () => JC;
 }
 
 type Nullable<T, O extends [Options<any>] | []> = O extends [{ nullable: true }]
@@ -64,7 +64,9 @@ type HasDefault<T extends [Options<any>] | []> = T extends [
 
 function _String(...opts: [StringOptions] | []) {
   return {
-    getJsonSchema: () => ({
+    getJsonSchema: (): { type: 'string'; transform: string[] } & Partial<
+      StringOptions
+    > => ({
       type: 'string' as const,
       transform: ['trim'],
       ...opts[0],
@@ -75,7 +77,7 @@ function _String(...opts: [StringOptions] | []) {
 
 function _Number(...opts: [NumericOptions] | []) {
   return {
-    getJsonSchema: () => ({
+    getJsonSchema: (): { type: 'number' } & Partial<NumericOptions> => ({
       type: 'number' as const,
       ...opts[0],
     }),
@@ -85,7 +87,7 @@ function _Number(...opts: [NumericOptions] | []) {
 
 function _Integer(...opts: [NumericOptions] | []) {
   return {
-    getJsonSchema: () => ({
+    getJsonSchema: (): { type: 'integer' } & Partial<NumericOptions> => ({
       type: 'integer' as const,
       ...opts[0],
     }),
@@ -95,7 +97,7 @@ function _Integer(...opts: [NumericOptions] | []) {
 
 function _Boolean(...opts: [BooleanOptions] | []) {
   return {
-    getJsonSchema: () => ({
+    getJsonSchema: (): { type: 'boolean' } & Partial<BooleanOptions> => ({
       type: 'boolean' as const,
       ...opts[0],
     }),
@@ -105,14 +107,15 @@ function _Boolean(...opts: [BooleanOptions] | []) {
 
 function _Any(...opts: [Options<any>] | []) {
   return {
-    getJsonSchema: () => ({ ...opts[0] }),
+    getJsonSchema: (): Partial<Options<unknown>> => ({ ...opts[0] }),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     type: 'abcd' as any,
   };
 }
 
 function _Unknown(...opts: [Options<unknown>] | []) {
   return {
-    getJsonSchema: () => ({ ...opts[0] }),
+    getJsonSchema: (): Partial<Options<unknown>> => ({ ...opts[0] }),
     type: 'abcd' as unknown,
   };
 }
@@ -123,7 +126,7 @@ function _Const<V, R extends boolean, O extends [ConstOptions<V>] | []>(
   ...opts: O
 ) {
   return {
-    getJsonSchema() {
+    getJsonSchema(): { const: V } & Partial<ConstOptions<V>> {
       return { const: value, ...(opts.length && opts[0]) };
     },
     type: value as Nullable<typeof value, O>,
@@ -133,7 +136,7 @@ function _Const<V, R extends boolean, O extends [ConstOptions<V>] | []>(
 
 function _Null(...opts: [Options<null>] | []) {
   return {
-    getJsonSchema: () => ({
+    getJsonSchema: (): { type: 'null' } & Partial<Options<null>> => ({
       type: 'null' as const,
       ...opts[0],
     }),
@@ -151,7 +154,7 @@ type GetOptionalKeys<T> = {
   [P in keyof T]: T[P] extends { isRequired: false } ? P : never;
 }[keyof T];
 interface Props {
-  [key: string]: CommonSchema<any>;
+  [key: string]: CommonSchema<unknown, unknown>;
 }
 type AllowAdditionalProperties<T, O extends [ObjectOptions] | []> = O extends [
   { additionalProperties: true },
@@ -165,18 +168,18 @@ function _Object<
   O extends [ObjectOptions] | []
 >(props: P, required: R, ...opts: O) {
   return {
-    getJsonSchema: () => {
+    getJsonSchema: (): {
+      type: 'object';
+      required?: string[];
+      properties: Record<keyof P, unknown>;
+    } & Partial<ObjectOptions> => {
       const propsRequired = _.map(props, (v, k) =>
         v.isRequired ? k : '',
       ).filter(v => v !== '');
 
       const ret = {
-        type: 'object',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        properties: _.mapValues(props, v => v.getJsonSchema()) as Record<
-          string,
-          any
-        >,
+        type: 'object' as const,
+        properties: _.mapValues(props, v => v.getJsonSchema()),
         additionalProperties: false,
         ...(opts.length && opts[0]),
       };
@@ -197,13 +200,16 @@ function _Object<
 }
 
 function _Array<
-  P extends CommonSchema<any>,
+  P extends CommonSchema<unknown, unknown>,
   R extends boolean,
   O extends [ArrayOptions] | []
 >(type: P, required: R, ...opts: O) {
   return {
-    getJsonSchema: () => ({
-      type: 'array',
+    getJsonSchema: (): {
+      type: 'array';
+      items: unknown;
+    } & Partial<ArrayOptions> => ({
+      type: 'array' as const,
       items: type.getJsonSchema(),
       ...(opts.length && opts[0]),
     }),
@@ -214,14 +220,15 @@ function _Array<
 
 // TODO: more precise type to allow only objects as args
 function _MergeObjects<
-  A extends CommonSchema<any>,
-  B extends CommonSchema<any>,
+  JSA extends ReturnType<ReturnType<typeof _Object>['getJsonSchema']>,
+  JSB extends ReturnType<ReturnType<typeof _Object>['getJsonSchema']>,
+  A extends CommonSchema<unknown, JSA>,
+  B extends CommonSchema<unknown, JSB>,
   R extends boolean
 >(obj1: A, obj2: B, required: R) {
   const s1 = obj1.getJsonSchema();
   const s2 = obj2.getJsonSchema();
 
-  /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access */
   const intersection = _.intersection(
     Object.keys(s1.properties),
     Object.keys(s2.properties),
@@ -236,10 +243,10 @@ function _MergeObjects<
 
   return {
     getJsonSchema: () => {
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       const nullable = s1.nullable || s2.nullable;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return {
-        type: 'object',
+        type: 'object' as const,
         properties: { ...s1.properties, ...s2.properties },
         required: [...(s1.required ?? []), ...(s2.required ?? [])],
         additionalProperties: false,
@@ -252,7 +259,6 @@ function _MergeObjects<
     type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
     isRequired: (required as unknown) as R,
   };
-  /* eslint-enable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access */
 }
 
 /**
@@ -267,8 +273,10 @@ function _Enum<
   O extends [EnumOptions<T>] | []
 >(els: T, required: R, ...opts: O) {
   return {
-    getJsonSchema: () => ({
-      type: 'string',
+    getJsonSchema: (): { type: 'string'; enum: T } & Partial<
+      EnumOptions<T>
+    > => ({
+      type: 'string' as const,
       enum: els,
       ...(opts.length && opts[0]),
     }),
@@ -278,14 +286,15 @@ function _Enum<
 }
 
 function _AnyOf<
-  T extends CommonSchema<unknown>[],
+  T extends CommonSchema<unknown, unknown>[],
   R extends boolean,
   O extends [AnyOfOptions<Nullable<T[number]['type'], O>>] | []
 >(schemas: T, required: R, ...opts: O) {
   return {
-    getJsonSchema() {
+    getJsonSchema(): { anyOf: unknown[] } & Partial<
+      AnyOfOptions<Nullable<T[number]['type'], O>>
+    > {
       return {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         anyOf: schemas.map(s => s.getJsonSchema()),
         ...(opts.length && opts[0]),
       };
@@ -295,7 +304,7 @@ function _AnyOf<
   };
 }
 
-function _Required<S extends CommonSchema<any>>(schema: S) {
+function _Required<S extends CommonSchema<unknown, unknown>>(schema: S) {
   return {
     ...(schema as Omit<S, 'type' | 'isRequired'>),
     type: undefined as Exclude<S['type'], undefined>,
@@ -303,7 +312,7 @@ function _Required<S extends CommonSchema<any>>(schema: S) {
   };
 }
 
-function _Optional<S extends CommonSchema<any>>(schema: S) {
+function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
   return {
     ...(schema as Omit<S, 'isRequired'>),
     isRequired: false as const,
@@ -317,7 +326,7 @@ function _Optional<S extends CommonSchema<any>>(schema: S) {
  * because we can't use the spread operator if we want "required" as the last argument.
  */
 function addRequiredArg<
-  Ret extends CommonSchemaWithoutIsRequired<any>,
+  Ret extends CommonSchemaWithoutIsRequired<unknown, unknown>,
   CSOptions extends [Options<Ret['type']>] | []
 >(csFunc: (...opts: CSOptions) => Ret) {
   function withRequired<T extends boolean, O extends CSOptions>(
