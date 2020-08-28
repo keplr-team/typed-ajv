@@ -568,6 +568,7 @@ describe('typed-ajv', () => {
           foo: { type: 'string', transform: ['trim'] },
           bar: { type: 'boolean' },
         },
+        selectDefault: { not: {} },
       });
     });
 
@@ -621,6 +622,7 @@ describe('typed-ajv', () => {
               foo: { type: 'string', transform: ['trim'] },
               bar: { type: 'boolean' },
             },
+            selectDefault: { not: {} },
           },
         },
         required: ['foo'],
