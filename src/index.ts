@@ -331,21 +331,19 @@ function _Select<
   ...otherwise: Otherwise
 ) {
   return {
-    getJsonSchema() {
-      const schema: {
-        select: { $data: string };
-        selectCases: Record<Cases, unknown>;
-        selectDefault?: unknown;
-      } = {
+    getJsonSchema(): {
+      select: { $data: string };
+      selectCases: Record<Cases, unknown>;
+      selectDefault: unknown;
+    } {
+      return {
         select: { $data: expression },
         selectCases: _.mapValues(cases, v => v.getJsonSchema()),
+        selectDefault:
+          otherwise.length && otherwise[0]
+            ? otherwise[0].getJsonSchema()
+            : { not: {} },
       };
-
-      if (otherwise.length && otherwise[0]) {
-        schema.selectDefault = otherwise[0].getJsonSchema();
-      }
-
-      return schema;
     },
 
     type: (undefined as unknown) as Otherwise['length'] extends 1
