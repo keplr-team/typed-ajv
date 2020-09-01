@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "@keplr/eslint-config-backend-node": "^2.0.1",
-    "@types/jest": "^26.0.10",
-    "@types/lodash": "^4.14.160",
+    "@types/jest": "^26.0.12",
+    "@types/lodash": "^4.14.161",
     "eslint": "^7.7.0",
     "husky": "^4.2.5",
     "jest": "^26.4.2",
