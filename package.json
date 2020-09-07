@@ -29,7 +29,7 @@
     "directory": "src/__tests__"
   },
   "devDependencies": {
-    "@keplr/eslint-config-backend-node": "^2.2.0",
+    "@keplr/eslint-config-backend-node": "^2.2.3",
     "@types/jest": "^26.0.13",
     "@types/lodash": "^4.14.161",
     "eslint": "^7.8.1",
