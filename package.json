@@ -32,10 +32,10 @@
     "@keplr/eslint-config-backend-node": "^2.2.4",
     "@types/jest": "^26.0.13",
     "@types/lodash": "^4.14.161",
-    "eslint": "^7.8.1",
+    "eslint": "^7.10.0",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
-    "lint-staged": "^10.3.0",
+    "lint-staged": "^10.4.0",
     "ts-jest": "^26.3.0",
     "tsd": "^0.13.1",
     "typescript": "^3.9.7"
