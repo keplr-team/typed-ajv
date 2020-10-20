@@ -16,6 +16,11 @@ export interface Options<Default> {
    * Default value for that property
    */
   default?: Default;
+
+  /**
+   * Provide examples for that property
+   */
+  examples?: unknown[];
 }
 
 export type AnyOfOptions<T> = Options<T>;
@@ -56,6 +61,10 @@ export interface NumericOptions extends Options<number> {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface ObjectOptions extends Options<object> {
   readonly additionalProperties?: boolean;
+
+  minProperties?: number;
+
+  maxProperties?: number;
 }
 
 /** JSON Schema options for strings */
