@@ -31,7 +31,7 @@
   "devDependencies": {
     "@keplr/eslint-config-backend-node": "^2.3.0",
     "@types/jest": "^26.0.15",
-    "@types/lodash": "^4.14.164",
+    "@types/lodash": "^4.14.165",
     "eslint": "^7.14.0",
     "husky": "^4.3.0",
     "jest": "^26.6.3",
