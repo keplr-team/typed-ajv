@@ -3,7 +3,7 @@ version: 2.1
 executors:
   ci-node:
     docker:
-    - image: keplr/node-ci:12
+    - image: circleci/node:14-buster
 
 jobs:
   deps-n-test:
@@ -30,7 +30,10 @@ jobs:
     steps:
     - attach_workspace:
         at: .
-    - run: keplrPublish --npm --npm-token-name NPM_TOKEN_PUBLISH --npm-target-tag ${CIRCLE_TAG}
+    - run:
+        name: Authenticate with registry
+        command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN_PUBLISH" > ~/.npmrc
+    - run: npm publish
 
 
 envs-matcher:
@@ -46,7 +49,7 @@ envs-matcher:
       branches:
         ignore: /.*/
       tags:
-        only: /^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
+        only: /^v?[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/
 
 workflows:
   build_n_test_n_deploy:
