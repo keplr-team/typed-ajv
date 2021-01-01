@@ -3,7 +3,7 @@ version: 2.1
 executors:
   ci-node:
     docker:
-    - image: circleci/node:14-buster
+    - image: circleci/node:15-buster
 
 jobs:
   deps-n-test:
