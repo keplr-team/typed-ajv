@@ -554,64 +554,64 @@ describe('typed-ajv', () => {
   describe('Select()', () => {
     it('works with select-case schema', () => {
       const cs = CS.Select(
-        'otherProp',
+        'prop',
         {
-          foo: CS.String(true),
-          bar: CS.Boolean(true),
+          val1: CS.Object({ prop: CS.Enum(['val1'] as const, true) }, true),
+          val2: CS.Object({ prop: CS.Enum(['val2'] as const, true) }, true),
         },
         true,
       );
       type csType = typeof cs.type;
 
-      checkType<csType>('str');
-      checkType<csType>(true);
+      checkType<csType>({ prop: 'val1' });
+      checkType<csType>({ prop: 'val2' });
 
-      expect(cs.getJsonSchema()).toEqual({
-        required: ['otherProp'],
-        select: { $data: '0/otherProp' },
-        selectCases: {
-          foo: { type: 'string', transform: ['trim'] },
-          bar: { type: 'boolean' },
-        },
-        selectDefault: { not: {} },
-      });
-    });
-
-    it('is included in a required schema', () => {
-      const cs = CS.Object(
-        {
-          foo: CS.Select(
-            'otherProp',
-            {
-              foo: CS.String(true),
-              bar: CS.Boolean(false),
-            },
-            true,
-          ),
-        },
-        true,
-      );
-      type csType = typeof cs.type;
-
-      checkType<csType>({ foo: 'str' });
-      checkType<csType>({ foo: true });
-
-      expect(cs.getJsonSchema()).toEqual({
-        type: 'object',
-        properties: {
-          foo: {
-            required: ['otherProp'],
-            select: { $data: '0/otherProp' },
-            selectCases: {
-              foo: { type: 'string', transform: ['trim'] },
-              bar: { type: 'boolean' },
-            },
-            selectDefault: { not: {} },
+      expect(cs.getJsonSchema()).toMatchInlineSnapshot(`
+        Object {
+          "required": Array [
+            "prop",
+          ],
+          "select": Object {
+            "$data": "0/prop",
           },
-        },
-        required: ['foo'],
-        additionalProperties: false,
-      });
+          "selectCases": Object {
+            "val1": Object {
+              "additionalProperties": false,
+              "properties": Object {
+                "prop": Object {
+                  "enum": Array [
+                    "val1",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": Array [
+                "prop",
+              ],
+              "type": "object",
+            },
+            "val2": Object {
+              "additionalProperties": false,
+              "properties": Object {
+                "prop": Object {
+                  "enum": Array [
+                    "val2",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": Array [
+                "prop",
+              ],
+              "type": "object",
+            },
+          },
+          "selectDefault": Object {
+            "not": Object {},
+          },
+          "type": "object",
+        }
+      `);
     });
   });
 
