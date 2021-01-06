@@ -64,9 +64,10 @@ type HasDefault<T extends [Options<any>] | []> = T extends [
 
 function _String(...opts: [StringOptions] | []) {
   return {
-    getJsonSchema: (): { type: 'string'; transform: string[] } & Partial<
-      StringOptions
-    > => ({
+    getJsonSchema: (): {
+      type: 'string';
+      transform: string[];
+    } & Partial<StringOptions> => ({
       type: 'string' as const,
       transform: ['trim'],
       ...opts[0],
@@ -322,33 +323,31 @@ function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
 function _Select<
   R extends boolean,
   Cases extends string,
-  Case extends CommonSchema<unknown, unknown>,
-  Otherwise extends [CommonSchema<unknown, unknown>] | []
->(
-  required: R,
-  expression: string,
-  cases: Record<Cases, Case>,
-  ...otherwise: Otherwise
-) {
+  Case extends CommonSchema<unknown, unknown>
+>(property: string, cases: Record<Cases, Case>, required: R) {
   return {
     getJsonSchema(): {
       select: { $data: string };
       selectCases: Record<Cases, unknown>;
       selectDefault: unknown;
+      required: unknown;
     } {
       return {
-        select: { $data: expression },
+        // Note: the selectDefault branch is only tested when the data pointed to by select.$data is defined.
+        // This means that input data where the data pointed to by select.$data is undefined is always
+        // considereed valid.
+        //
+        // We want unexpected data not to match the schema, so we need `property` to be required to work around this pitfall.
+        //
+        // This also means that we can't really use selectDefault, since it only works when type is present.
+        required: [property],
+        select: { $data: `0/${property}` },
         selectCases: _.mapValues(cases, v => v.getJsonSchema()),
-        selectDefault:
-          otherwise.length && otherwise[0]
-            ? otherwise[0].getJsonSchema()
-            : { not: {} },
+        selectDefault: { not: {} },
       };
     },
 
-    type: (undefined as unknown) as Otherwise['length'] extends 1
-      ? Case['type'] | Otherwise[number]['type']
-      : Case['type'],
+    type: (undefined as unknown) as Case['type'],
 
     isRequired: required,
   };
@@ -412,11 +411,11 @@ export const CS = {
    *
    * The `required` attribute of cases is ignored in favor of select's own required value.
    *
-   * @param expression Expression to use as reference for the select.
+   * @param property The key of the property to match on
    * @param cases Object with keys as matching value and values as schema to use when the key matches.
-   * @param otherwise Schema to be used if none of the cases matches.
    *
-   * @example CS.Select(true, '1/siblingProperty', { foo: CS.String(true), bar: CS.Boolean(true) })
+   * @example CS.Select(true, 'type', { type: CS.Object({ type: CS.Enum(['typeA'],true), extraA: CS.String(true) }, true),  { type: CS.Object({ type: CS.Enum(['typeB'],true), extraB: CS.String(true) }, true)})
+   * will match {type: 'typeA', extraA: 'aaa'} or {type: 'typeA', extraB: 'aaa'} but not {type: 'other'} or {}
    */
   Select: _Select,
 

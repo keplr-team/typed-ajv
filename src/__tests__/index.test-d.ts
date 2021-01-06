@@ -223,26 +223,38 @@ expectNotAssignable<number | string>(
 // Select
 
 expectType<string | boolean>(
-  CS.Select(true, '1/otherProp', {
-    foo: CS.String(true),
-    bar: CS.Boolean(true),
-  }).type,
+  CS.Select(
+    '1/otherProp',
+    {
+      foo: CS.String(true),
+      bar: CS.Boolean(true),
+    },
+    true,
+  ).type,
 );
 
 expectNotAssignable<number>(
-  CS.Select(true, '1/otherProp', {
-    foo: CS.String(true),
-    bar: CS.Boolean(true),
-  }).type,
+  CS.Select(
+    '1/otherProp',
+    {
+      foo: CS.String(true),
+      bar: CS.Boolean(true),
+    },
+    true,
+  ).type,
 );
 
 expectAssignable<{ foo: string | boolean }>(
   CS.Object(
     {
-      foo: CS.Select(true, '1/otherProp', {
-        foo: CS.String(true),
-        bar: CS.Boolean(true),
-      }),
+      foo: CS.Select(
+        '1/otherProp',
+        {
+          foo: CS.String(true),
+          bar: CS.Boolean(true),
+        },
+        true,
+      ),
     },
     true,
   ).type,
@@ -251,10 +263,14 @@ expectAssignable<{ foo: string | boolean }>(
 expectAssignable<{ foo?: string | boolean }>(
   CS.Object(
     {
-      foo: CS.Select(false, '1/otherProp', {
-        foo: CS.String(true),
-        bar: CS.Boolean(true),
-      }),
+      foo: CS.Select(
+        '1/otherProp',
+        {
+          foo: CS.String(true),
+          bar: CS.Boolean(true),
+        },
+        false,
+      ),
     },
     true,
   ).type,
@@ -263,43 +279,27 @@ expectAssignable<{ foo?: string | boolean }>(
 expectNotAssignable<{ foo: string | boolean }>(
   CS.Object(
     {
-      foo: CS.Select(false, '1/otherProp', {
-        foo: CS.String(true),
-        bar: CS.Boolean(true),
-      }),
+      foo: CS.Select(
+        '1/otherProp',
+        {
+          foo: CS.String(true),
+          bar: CS.Boolean(true),
+        },
+        false,
+      ),
     },
     true,
   ).type,
 );
 
 expectNotAssignable<number>(
-  CS.Select(true, '1/otherProp', {
-    foo: CS.String(true),
-    bar: CS.Boolean(true),
-  }).type,
-);
-
-expectType<string | boolean | null>(
   CS.Select(
-    true,
     '1/otherProp',
     {
       foo: CS.String(true),
       bar: CS.Boolean(true),
     },
-    CS.Null(true),
-  ).type,
-);
-
-expectNotAssignable<number>(
-  CS.Select(
     true,
-    '1/otherProp',
-    {
-      foo: CS.String(true),
-      bar: CS.Boolean(true),
-    },
-    CS.Null(true),
   ).type,
 );
 
