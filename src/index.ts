@@ -323,24 +323,26 @@ function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
 function _Select<
   R extends boolean,
   Cases extends string,
-  Case extends CommonSchema<unknown, unknown>
+  Case extends CommonSchema<Record<string, unknown>, unknown>
 >(property: string, cases: Record<Cases, Case>, required: R) {
   return {
     getJsonSchema(): {
       select: { $data: string };
       selectCases: Record<Cases, unknown>;
       selectDefault: unknown;
-      required: unknown;
+      required: string[];
+      type: 'object';
     } {
       return {
         // Note: the selectDefault branch is only tested when the data pointed to by select.$data is defined.
         // This means that input data where the data pointed to by select.$data is undefined is always
-        // considereed valid.
+        // considered valid.
         //
         // We want unexpected data not to match the schema, so we need `property` to be required to work around this pitfall.
         //
         // This also means that we can't really use selectDefault, since it only works when type is present.
         required: [property],
+        type: 'object',
         select: { $data: `0/${property}` },
         selectCases: _.mapValues(cases, v => v.getJsonSchema()),
         selectDefault: { not: {} },
