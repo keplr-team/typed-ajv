@@ -48,14 +48,13 @@ if (ajv.validate(jsonSchema, inputData)) {
 
 ## Supported compound types
 
-| Type         | Description                                                                                                                               |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| AnyOf        | Any type within a selection of definitions                                                                                                |
-| Array        | An array of a type                                                                                                                        |
-| Enum         | A string with enumerated values                                                                                                           |
-| Object       | An object with typed properties                                                                                                           |
-| MergeObjects | Merge two object definitions into one object containing all the properties                                                                |
-| Select       | A [select/case](https://github.com/epoberezkin/ajv-keywords#selectselectcasesselectdefault) schema to validate depending on an expression |
+| Type         | Description                                                                |
+| ------------ | -------------------------------------------------------------------------- |
+| AnyOf        | Any type within a selection of definitions                                 |
+| Array        | An array of a type                                                         |
+| Enum         | A string with enumerated values                                            |
+| Object       | An object with typed properties                                            |
+| MergeObjects | Merge two object definitions into one object containing all the properties |
 
 ## Helpers
 
@@ -63,3 +62,46 @@ if (ajv.validate(jsonSchema, inputData)) {
 | -------- | --------------------------------------------- | ------------------------------------------------- |
 | Required | Changes the type of the schema to be required | CS.Required(CS.String(false)) === CS.String(true) |
 | Optional | Changes the type of the schema to be optional | CS.Optional(CS.String(true)) === CS.String(false) |
+
+## Using AnyOf with objects and `removeAdditional: true`
+
+`AnyOf`, when ajv is configured with `removeAdditional: true`, doesn't behave the expected way. For example :
+
+```ts
+CS.AnyOf(
+  [
+    CS.Object(
+      { type: CS.Enum(['car'] as const, true), wheels: CS.Number(true) },
+      true,
+    ),
+    CS.Object(
+      { type: CS.Enum(['horse'] as const, true), legs: CS.Number(true) },
+      true,
+    ),
+  ],
+  true,
+);
+```
+
+The above schema will unexpectedly fail to validate `{type: 'horse', legs: 4}` because, when evaluation the 'car' option, ajv will remove all the properties except `type` and `wheels`.
+
+For the above schema to work as expected, use the discriminator option:
+
+```ts
+CS.AnyOf(
+  [
+    CS.Object(
+      { type: CS.Enum(['car'] as const, true), wheels: CS.Number(true) },
+      true,
+    ),
+    CS.Object(
+      { type: CS.Enum(['horse'] as const, true), legs: CS.Number(true) },
+      true,
+    ),
+  ],
+  true,
+  { discriminator: 'type' },
+);
+```
+
+Ajv will also need to be initialized with the `discriminator: true` option.
