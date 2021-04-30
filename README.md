@@ -83,7 +83,7 @@ CS.AnyOf(
 );
 ```
 
-The above schema will unexpectedly fail to validate `{type: 'horse', legs: 4}` because, when evaluation the 'car' option, ajv will remove all the properties except `type` and `wheels`.
+The above schema will unexpectedly fail to validate `{type: 'horse', legs: 4}` because, when evaluating the 'car' option, ajv will remove all the properties except `type` and `wheels`. Thus the 'horse' option will be evaluated with the `legs` property removed and fail to validate.
 
 For the above schema to work as expected, use the discriminator option:
 
