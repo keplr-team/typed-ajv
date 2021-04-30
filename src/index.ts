@@ -292,12 +292,18 @@ function _AnyOf<
   O extends [AnyOfOptions<Nullable<T[number]['type'], O>>] | []
 >(schemas: T, required: R, ...opts: O) {
   return {
-    getJsonSchema(): { anyOf: unknown[] } & Partial<
-      AnyOfOptions<Nullable<T[number]['type'], O>>
-    > {
+    getJsonSchema() {
+      if (!opts[0]?.discriminator) {
+        return {
+          anyOf: schemas.map(s => s.getJsonSchema()),
+          ...(opts.length && opts[0]),
+        };
+      }
       return {
-        anyOf: schemas.map(s => s.getJsonSchema()),
+        type: 'object',
+        oneOf: schemas.map(s => s.getJsonSchema()), // oneOf and anyOf are the same when discriminator is used
         ...(opts.length && opts[0]),
+        discriminator: { propertyName: opts[0].discriminator },
       };
     },
     type: (undefined as unknown) as Nullable<T[number]['type'], O>,
@@ -317,41 +323,6 @@ function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
   return {
     ...(schema as Omit<S, 'isRequired'>),
     isRequired: false as const,
-  };
-}
-
-function _Select<
-  R extends boolean,
-  Cases extends string,
-  Case extends CommonSchema<Record<string, unknown>, unknown>
->(property: string, cases: Record<Cases, Case>, required: R) {
-  return {
-    getJsonSchema(): {
-      select: { $data: string };
-      selectCases: Record<Cases, unknown>;
-      selectDefault: unknown;
-      required: string[];
-      type: 'object';
-    } {
-      return {
-        // Note: the selectDefault branch is only tested when the data pointed to by select.$data is defined.
-        // This means that input data where the data pointed to by select.$data is undefined is always
-        // considered valid.
-        //
-        // We want unexpected data not to match the schema, so we need `property` to be required to work around this pitfall.
-        //
-        // This also means that we can't really use selectDefault, since it only works when type is present.
-        required: [property],
-        type: 'object',
-        select: { $data: `0/${property}` },
-        selectCases: _.mapValues(cases, v => v.getJsonSchema()),
-        selectDefault: { not: {} },
-      };
-    },
-
-    type: (undefined as unknown) as Case['type'],
-
-    isRequired: required,
   };
 }
 
@@ -407,19 +378,6 @@ export const CS = {
   Array: _Array,
   MergeObjects: _MergeObjects,
   Enum: _Enum,
-
-  /**
-   * Creates a select/case schema.
-   *
-   * The `required` attribute of cases is ignored in favor of select's own required value.
-   *
-   * @param property The key of the property to match on
-   * @param cases Object with keys as matching value and values as schema to use when the key matches.
-   *
-   * @example CS.Select(true, 'type', { type: CS.Object({ type: CS.Enum(['typeA'],true), extraA: CS.String(true) }, true),  { type: CS.Object({ type: CS.Enum(['typeB'],true), extraB: CS.String(true) }, true)})
-   * will match {type: 'typeA', extraA: 'aaa'} or {type: 'typeA', extraB: 'aaa'} but not {type: 'other'} or {}
-   */
-  Select: _Select,
 
   /**
    * Accept any of the schemas from the 1st argument.

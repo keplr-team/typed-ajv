@@ -23,7 +23,9 @@ export interface Options<Default> {
   examples?: unknown[];
 }
 
-export type AnyOfOptions<T> = Options<T>;
+export interface AnyOfOptions<T> extends Options<T> {
+  discriminator?: string;
+}
 
 /** JSON Schema options for arrays */
 export interface ArrayOptions extends Options<unknown[]> {
