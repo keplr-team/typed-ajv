@@ -34,4 +34,17 @@ describe('the schemas validate as expected with ajv', () => {
       expect(validate({ type: 'car', wheels: 2 })).toBe(true);
     });
   });
+
+  describe('Const', () => {
+    it('works properly', () => {
+      const schema = CS.Const('a' as const, true).getJsonSchema();
+
+      const validate = new Ajv({ allErrors: true }).compile(schema);
+
+      // main test
+      expect(validate('a')).toBe(true);
+      expect(validate('b')).toBe(false);
+      expect(validate(1)).toBe(false);
+    });
+  });
 });
