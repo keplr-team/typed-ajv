@@ -1,0 +1,20 @@
+name: Node.js CI
+
+on:
+  push:
+    tags: '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2 # will create .npmrc
+      with: # does not publish if missing
+        node-version: 16 # does not publish if missing
+        registry-url: 'https://registry.npmjs.org' # does not publish if missing
+    - run: npm ci
+    - run: npm run build
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }} # copy the token to the .npmrc

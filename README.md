@@ -19,6 +19,9 @@ Get the type:
 type Type = typeof cs.type; // { a: string, b?: number }
 ```
 
+
+
+
 Get the json schema:
 
 ```typescript
