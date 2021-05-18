@@ -1,0 +1,23 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: keplr-team/action-npm-cache@6109e27b5ae09f9e4e74157867b700a6cb7dac2a
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 16
+    - run: npm ci
+    - run: npm run lint
+    - run: npm run build
+    - run: npm test
+
+
