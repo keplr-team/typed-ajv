@@ -31,7 +31,7 @@
   "devDependencies": {
     "@keplr/eslint-config-backend-node": "^2.5.1",
     "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.168",
+    "@types/lodash": "^4.14.170",
     "ajv": "^8.2.0",
     "eslint": "^7.26.0",
     "husky": "^4.3.8",
@@ -39,7 +39,7 @@
     "lint-staged": "^10.5.4",
     "ts-jest": "^26.5.5",
     "tsd": "^0.14.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.2"
   },
   "dependencies": {
     "lodash": "^4.17.21"
