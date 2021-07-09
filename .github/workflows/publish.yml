@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2 # will create .npmrc
+    - uses: actions/setup-node@v2
       with: # does not publish if missing
         node-version: 16 # does not publish if missing
         registry-url: 'https://registry.npmjs.org' # does not publish if missing
