@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars,@typescript-eslint/no-unused-vars-experimental */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CS } from '../index';
 
 const checkType = <A>(a: A) => a;

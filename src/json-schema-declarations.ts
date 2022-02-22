@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-type-alias */
 /** JSON Schema basic options.
  * All options must extend this interface.
  */
