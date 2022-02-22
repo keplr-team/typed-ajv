@@ -131,7 +131,7 @@ function _Const<V, R extends boolean, O extends [ConstOptions<V>] | []>(
       return { const: value, ...(opts.length && opts[0]) };
     },
     type: value as Nullable<typeof value, O>,
-    isRequired: (required as unknown) as R extends true ? true : HasDefault<O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
   };
 }
 
@@ -166,7 +166,7 @@ type AllowAdditionalProperties<T, O extends [ObjectOptions] | []> = O extends [
 function _Object<
   P extends Props,
   R extends boolean,
-  O extends [ObjectOptions] | []
+  O extends [ObjectOptions] | [],
 >(props: P, required: R, ...opts: O) {
   return {
     getJsonSchema: (): {
@@ -188,22 +188,23 @@ function _Object<
         ? { ...ret, required: propsRequired }
         : ret;
     },
-    type: (undefined as unknown) as Nullable<
+    type: undefined as unknown as Nullable<
       AllowAdditionalProperties<
-        { [k in GetRequiredKeys<P>]: P[k]['type'] } &
-          { [k in GetOptionalKeys<P>]?: P[k]['type'] },
+        { [k in GetRequiredKeys<P>]: P[k]['type'] } & {
+          [k in GetOptionalKeys<P>]?: P[k]['type'];
+        },
         O
       >,
       O
     >,
-    isRequired: (required as unknown) as R extends true ? true : HasDefault<O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
   };
 }
 
 function _Array<
   P extends CommonSchema<unknown, unknown>,
   R extends boolean,
-  O extends [ArrayOptions] | []
+  O extends [ArrayOptions] | [],
 >(type: P, required: R, ...opts: O) {
   return {
     getJsonSchema: (): {
@@ -214,8 +215,8 @@ function _Array<
       items: type.getJsonSchema(),
       ...(opts.length && opts[0]),
     }),
-    type: (undefined as unknown) as Nullable<P['type'][], O>,
-    isRequired: (required as unknown) as R extends true ? true : HasDefault<O>,
+    type: undefined as unknown as Nullable<P['type'][], O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
   };
 }
 
@@ -225,7 +226,7 @@ function _MergeObjects<
   JSB extends ReturnType<ReturnType<typeof _Object>['getJsonSchema']>,
   A extends CommonSchema<unknown, JSA>,
   B extends CommonSchema<unknown, JSB>,
-  R extends boolean
+  R extends boolean,
 >(obj1: A, obj2: B, required: R) {
   const s1 = obj1.getJsonSchema();
   const s2 = obj2.getJsonSchema();
@@ -257,8 +258,8 @@ function _MergeObjects<
           : undefined),
       };
     },
-    type: (undefined as unknown) as NullableMerge<A['type'], B['type']>,
-    isRequired: (required as unknown) as R,
+    type: undefined as unknown as NullableMerge<A['type'], B['type']>,
+    isRequired: required as unknown as R,
   };
 }
 
@@ -271,7 +272,7 @@ function _MergeObjects<
 function _Enum<
   T extends readonly string[],
   R extends boolean,
-  O extends [EnumOptions<T>] | []
+  O extends [EnumOptions<T>] | [],
 >(els: T, required: R, ...opts: O) {
   return {
     getJsonSchema: (): { type: 'string'; enum: T } & Partial<
@@ -281,15 +282,15 @@ function _Enum<
       enum: els,
       ...(opts.length && opts[0]),
     }),
-    type: (undefined as unknown) as Nullable<T[number], O>,
-    isRequired: (required as unknown) as R extends true ? true : HasDefault<O>,
+    type: undefined as unknown as Nullable<T[number], O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
   };
 }
 
 function _AnyOf<
   T extends CommonSchema<unknown, unknown>[],
   R extends boolean,
-  O extends [AnyOfOptions<Nullable<T[number]['type'], O>>] | []
+  O extends [AnyOfOptions<Nullable<T[number]['type'], O>>] | [],
 >(schemas: T, required: R, ...opts: O) {
   return {
     getJsonSchema() {
@@ -306,8 +307,8 @@ function _AnyOf<
         discriminator: { propertyName: opts[0].discriminator },
       };
     },
-    type: (undefined as unknown) as Nullable<T[number]['type'], O>,
-    isRequired: (required as unknown) as R extends true ? true : HasDefault<O>,
+    type: undefined as unknown as Nullable<T[number]['type'], O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
   };
 }
 
@@ -334,7 +335,7 @@ function _Optional<S extends CommonSchema<unknown, unknown>>(schema: S) {
  */
 function addRequiredArg<
   Ret extends CommonSchemaWithoutIsRequired<unknown, unknown>,
-  CSOptions extends [Options<Ret['type']>] | []
+  CSOptions extends [Options<Ret['type']>] | [],
 >(csFunc: (...opts: CSOptions) => Ret) {
   function withRequired<T extends boolean, O extends CSOptions>(
     required: T,
@@ -343,9 +344,7 @@ function addRequiredArg<
     return {
       ...(csFunc(...opts) as Omit<Ret, 'type'>), // We need to omit 'type' to override it
       type: undefined as Nullable<Ret['type'], O>,
-      isRequired: (required as unknown) as T extends true
-        ? true
-        : HasDefault<O>,
+      isRequired: required as unknown as T extends true ? true : HasDefault<O>,
     };
   }
   return withRequired;
