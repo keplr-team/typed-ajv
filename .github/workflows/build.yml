@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: keplr-team/action-npm-cache@6109e27b5ae09f9e4e74157867b700a6cb7dac2a
+    - uses: keplr-team/action-npm-cache@e58571a84342b949fe48c91d515e2bfeac8c740c
     - uses: actions/setup-node@v2
       with:
         node-version: 16
