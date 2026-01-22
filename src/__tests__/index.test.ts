@@ -487,6 +487,55 @@ describe('typed-ajv', () => {
     });
   });
 
+  describe('Dictionary()', () => {
+    it('works with dictionary schema', () => {
+      const dict = CS.Dictionary(CS.String(true), true);
+      type dictType = typeof dict.type;
+
+      checkType<dictType>({ foo: 'bar', baz: 'qux' });
+      expect(dict.getJsonSchema()).toMatchSnapshot();
+    });
+
+    it('works with dictionary of arrays', () => {
+      const schema = CS.Object(
+        {
+          foos: CS.Dictionary(CS.Array(CS.String(true), true), true),
+        },
+        true,
+      );
+
+      type schemaType = typeof schema.type;
+      checkType<schemaType>({
+        foos: {
+          abc: ['def'],
+        },
+      });
+
+      expect(schema.getJsonSchema()).toMatchSnapshot();
+    });
+
+    it('works with dictionary and opts', () => {
+      const dict = CS.Dictionary(CS.String(true), true, {
+        minProperties: 1,
+      });
+      type dictType = typeof dict.type;
+
+      checkType<dictType>({ foo: 'bar' });
+      expect(dict.getJsonSchema()).toMatchSnapshot();
+    });
+
+    it('works with dictionary and nullable option', () => {
+      const dict = CS.Dictionary(CS.String(true), true, {
+        nullable: true,
+      });
+      type dictType = typeof dict.type;
+
+      checkType<dictType>({ foo: 'bar' });
+      checkType<dictType>(null);
+      expect(dict.getJsonSchema()).toMatchSnapshot();
+    });
+  });
+
   describe('Enum()', () => {
     it('works with enum schema', () => {
       const cs = CS.Enum(['a' as const, 'b' as const], true);

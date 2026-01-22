@@ -124,6 +124,68 @@ Object {
 }
 `;
 
+exports[`typed-ajv Dictionary() works with dictionary and nullable option 1`] = `
+Object {
+  "additionalProperties": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "nullable": true,
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Dictionary() works with dictionary and opts 1`] = `
+Object {
+  "additionalProperties": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "minProperties": 1,
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Dictionary() works with dictionary of arrays 1`] = `
+Object {
+  "additionalProperties": false,
+  "properties": Object {
+    "foos": Object {
+      "additionalProperties": Object {
+        "items": Object {
+          "transform": Array [
+            "trim",
+          ],
+          "type": "string",
+        },
+        "type": "array",
+      },
+      "type": "object",
+    },
+  },
+  "required": Array [
+    "foos",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`typed-ajv Dictionary() works with dictionary schema 1`] = `
+Object {
+  "additionalProperties": Object {
+    "transform": Array [
+      "trim",
+    ],
+    "type": "string",
+  },
+  "type": "object",
+}
+`;
+
 exports[`typed-ajv Enum() works with enum schema 1`] = `
 Object {
   "enum": Array [
