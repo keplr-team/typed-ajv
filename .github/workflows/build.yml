@@ -10,11 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: keplr-team/action-npm-cache@6109e27b5ae09f9e4e74157867b700a6cb7dac2a
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        node-version: 16
+        node-version: 20
+        cache: 'npm'
     - run: npm ci
     - run: npm run lint
     - run: npm run build

@@ -7,6 +7,7 @@ import {
   ArrayOptions,
   BooleanOptions,
   ConstOptions,
+  DictionaryOptions,
   EnumOptions,
   NumericOptions,
   ObjectOptions,
@@ -220,6 +221,34 @@ function _Array<
   };
 }
 
+/**
+ * Creates a dictionary schema with specified type, required status, and optional configuration.
+ *
+ * @param type - The schema for the values in the dictionary.
+ * @param required - A boolean indicating whether the dictionary is required.
+ * @param opts - Additional configuration options for the dictionary.
+ * @example CS.Dictionary(CS.String(true), true)
+ * @return An object containing methods for JSON schema generation and type-related metadata.
+ */
+function _Dictionary<
+    P extends CommonSchema<unknown, unknown>,
+    R extends boolean,
+    O extends [DictionaryOptions] | [],
+>(type: P, required: R, ...opts: O) {
+  return {
+    getJsonSchema: (): {
+      type: 'object';
+      additionalProperties: unknown;
+    } & Partial<DictionaryOptions> => ({
+      type: 'object' as const,
+      additionalProperties: type.getJsonSchema(),
+      ...(opts.length && opts[0]),
+    }),
+    type: undefined as unknown as Nullable<Record<string, P['type']>, O>,
+    isRequired: required as unknown as R extends true ? true : HasDefault<O>,
+  } as const;
+}
+
 // TODO: more precise type to allow only objects as args
 function _MergeObjects<
   JSA extends ReturnType<ReturnType<typeof _Object>['getJsonSchema']>,
@@ -375,6 +404,7 @@ export const CS = {
   // Compound types
   Object: _Object,
   Array: _Array,
+  Dictionary: _Dictionary,
   MergeObjects: _MergeObjects,
   Enum: _Enum,
 

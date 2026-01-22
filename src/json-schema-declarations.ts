@@ -70,6 +70,15 @@ export interface ObjectOptions extends Options<object> {
   maxProperties?: number;
 }
 
+/**
+ * JSON Schema options for dictionaries
+ */
+export interface DictionaryOptions extends Options<object> {
+  minProperties?: number;
+
+  maxProperties?: number;
+}
+
 /** JSON Schema options for strings */
 export interface StringOptions extends Options<string> {
   /** Minimum length for the string, must be a non-negative number */
