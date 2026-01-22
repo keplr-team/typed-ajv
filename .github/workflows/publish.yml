@@ -1,12 +1,16 @@
 name: Node.js CI
 
 on:
+  workflow_dispatch:
+
   push:
-    tags: '*'
+    tags: ['*']
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4 # will create .npmrc
@@ -15,6 +19,9 @@ jobs:
         registry-url: 'https://registry.npmjs.org' # does not publish if missing
     - run: npm ci
     - run: npm run build
-    - run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_KEY }} # copy the token to the .npmrc
+    - name: publish
+      shell: bash
+      run: |
+        export NPM_TOKEN=${{ env.NPM_TOKEN }}
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+        npm publish 
